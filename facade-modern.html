@@ -990,7 +990,7 @@
                         </div>
                     </div>
                     <div class="px-card" data-cat="balusters" data-img="images/products/balusters/flat-bar-baluster.png"
-                        data-thumbs="images/products/balusters/flat-bar-baluster.png|images/products/balusters/flat-bar-baluster.png|images/products/balusters/flat-bar-baluster.png"
+                        data-thumbs="images/products/balusters/flat-bar-baluster.png|images/products/balusters-new/026_DSC05766.jpg"
                         data-name="Flat Bar Baluster" data-cat-label="Balusters"
                         data-desc="Minimal flat bar profile — bold graphic quality with industrial character. Cost-effective and contemporary."
                         data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Customisable as per requirement</td></tr><tr><td>Size</td><td>Customisable as per requirement</td></tr><tr><td>Height</td><td>Customisable as per requirement</td></tr><tr><td>Finish</td><td>Customisable as per requirement</td></tr><tr><td>Application</td><td>Modern railings, commercial spaces</td></tr>">
@@ -1331,7 +1331,7 @@
                         </div>
                     </div>
                     <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05778_sq.JPG"
-                        data-thumbs="images/products/partitions/DSC05778_sq.JPG|images/products/partitions/DSC05778_sq.JPG|images/products/partitions/DSC05778_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05778_sq.JPG|images/products/balusters-new/029_DSC05778.jpg|images/products/balusters-new/030_DSC05780.jpg"
                         data-name="Floral Jali Panel" data-cat-label="Partitions"
                         data-desc="Intricate floral jali pattern — a traditional Indian design element executed in precision-cut metal."
                         data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Profile</td><td>Customisable as per requirement</td></tr><tr><td>Size</td><td>Customisable as per requirement</td></tr><tr><td>Height</td><td>Customisable as per requirement</td></tr><tr><td>Finish</td><td>Customisable as per requirement</td></tr><tr><td>Application</td><td>Interiors, screens, room dividers</td></tr>">
@@ -1963,12 +1963,124 @@
             const pPrev = document.getElementById('pmodalPrev');
             const pNext = document.getElementById('pmodalNext');
 
-            let modalCards = [], modalIdx = 0;
+                                    let modalCards = [], modalIdx = 0;
+            var currentThumbIdx = 0;
+            var currentThumbs = [];
+
+            // ── ZOOM SYSTEM (Floating right-side magnifying preview) ──
+            var _zoomBox = null;
+            var ZOOM = 3.5;
+
+            function ensureZoomBox() {
+                if (_zoomBox) return _zoomBox;
+                var box = document.createElement('div');
+                box.id = '_zbox';
+                box.style.cssText = 'display:none;position:fixed;width:380px;height:380px;'
+                    + 'border:1px solid #e2d5c0;border-top:2px solid #b8943f;background:#fff;'
+                    + 'overflow:hidden;box-shadow:0 12px 48px rgba(28,24,20,.25);z-index:9999;pointer-events:none;';
+                var img = document.createElement('img');
+                img.id = '_zimg';
+                img.style.cssText = 'position:absolute;max-width:none;pointer-events:none;';
+                box.appendChild(img);
+                document.body.appendChild(box);
+                _zoomBox = box;
+                return box;
+            }
+
+            function hideZoom() {
+                var lens = document.getElementById('zoomLens');
+                if (lens) lens.style.display = 'none';
+                if (_zoomBox) _zoomBox.style.display = 'none';
+            }
+
+            function updateZoomImage() {
+                var rImg = document.getElementById('_zimg');
+                var mImg = document.getElementById('pmodalImg');
+                if (rImg && mImg) {
+                    rImg.src = mImg.src;
+                }
+            }
+
+            function initZoomEvents() {
+                var wrap = document.getElementById('zoomWrap');
+                if (!wrap || wrap._zoomBound) return;
+                wrap._zoomBound = true;
+
+                wrap.addEventListener('mouseenter', function () {
+                    if (window.innerWidth <= 900) return;
+                    var mImg = document.getElementById('pmodalImg');
+                    if (!mImg || !mImg.src) return;
+
+                    var box = ensureZoomBox();
+                    var rImg = document.getElementById('_zimg');
+                    var lens = document.getElementById('zoomLens');
+
+                    rImg.src = mImg.src;
+                    rImg.style.width = (wrap.offsetWidth * ZOOM) + 'px';
+                    rImg.style.height = (wrap.offsetHeight * ZOOM) + 'px';
+
+                    box.style.display = 'block';
+                    if (lens) lens.style.display = 'block';
+                });
+
+                wrap.addEventListener('mousemove', function (e) {
+                    if (window.innerWidth <= 900 || !_zoomBox || _zoomBox.style.display === 'none') return;
+                    var lens = document.getElementById('zoomLens');
+                    var rImg = document.getElementById('_zimg');
+                    var rect = wrap.getBoundingClientRect();
+
+                    var lw = lens ? lens.offsetWidth : 100;
+                    var lh = lens ? lens.offsetHeight : 100;
+
+                    var lx = Math.max(0, Math.min(e.clientX - rect.left - lw / 2, wrap.offsetWidth - lw));
+                    var ly = Math.max(0, Math.min(e.clientY - rect.top - lh / 2, wrap.offsetHeight - lh));
+
+                    if (lens) {
+                        lens.style.left = lx + 'px';
+                        lens.style.top = ly + 'px';
+                    }
+
+                    if (rImg) {
+                        rImg.style.left = -(lx * ZOOM) + 'px';
+                        rImg.style.top = -(ly * ZOOM) + 'px';
+                    }
+
+                    // Position zoom preview box to right of modal
+                    var pmodalEl = document.getElementById('pmodal');
+                    var mr = pmodalEl ? pmodalEl.getBoundingClientRect() : rect;
+                    var bh = _zoomBox.offsetHeight;
+                    var top = Math.max(10, Math.min(e.clientY - bh / 2, window.innerHeight - bh - 10));
+
+                    _zoomBox.style.left = (mr.right + 14) + 'px';
+                    _zoomBox.style.top = top + 'px';
+                });
+
+                wrap.addEventListener('mouseleave', hideZoom);
+            }
+
+            function setModalImage(idx) {
+                if (!currentThumbs.length) return;
+                currentThumbIdx = (idx + currentThumbs.length) % currentThumbs.length;
+                var mainImg = document.getElementById('pmodalImg');
+                if (mainImg) {
+                    mainImg.style.opacity = '0';
+                    setTimeout(function () {
+                        mainImg.src = currentThumbs[currentThumbIdx];
+                        mainImg.style.opacity = '1';
+                        updateZoomImage();
+                    }, 150);
+                }
+                var thumbElements = pThumbs.querySelectorAll('.pmodal-thumb');
+                thumbElements.forEach(function (t, i) {
+                    t.classList.toggle('active', i === currentThumbIdx);
+                });
+            }
 
             function openModal(idx) {
                 modalCards = getFiltered();
                 modalIdx = idx;
                 renderModal();
+                initZoomEvents();
                 backdrop.classList.add('open');
                 document.body.style.overflow = 'hidden';
                 pmodal.scrollTop = 0;
@@ -1977,11 +2089,6 @@
             function renderModal() {
                 const c = modalCards[modalIdx];
                 if (!c) return;
-
-                // Main image — re-query every time because setupZoom cloneNode replaces the DOM node
-                const pImg = document.getElementById('pmodalImg');
-                pImg.src = c.dataset.img || '';
-                pImg.alt = c.dataset.name || '';
 
                 // Category & name
                 pCat.textContent = c.dataset.catLabel || '';
@@ -1995,104 +2102,38 @@
                     ? c.dataset.specs.replace(/&quot;/g, '"')
                     : '';
 
-                // Thumbnail strip
+                // Thumbs
+                currentThumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|').filter(Boolean) : [c.dataset.img];
+                if (!currentThumbs.length && c.dataset.img) currentThumbs = [c.dataset.img];
+                currentThumbIdx = 0;
+
+                // Initial main image
+                var mainImg = document.getElementById('pmodalImg');
+                if (mainImg) {
+                    mainImg.src = currentThumbs[0] || '';
+                    mainImg.alt = c.dataset.name || '';
+                    mainImg.style.opacity = '1';
+                    updateZoomImage();
+                }
+
+                // Render Thumbnail strip
                 pThumbs.innerHTML = '';
-                const thumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|') : [c.dataset.img];
-                thumbs.forEach((src, i) => {
+                currentThumbs.forEach(function (src, i) {
                     if (!src) return;
-                    const t = document.createElement('img');
+                    var t = document.createElement('img');
                     t.src = src;
+                    t.alt = (c.dataset.name || '') + ' ' + (i + 1);
                     t.className = 'pmodal-thumb' + (i === 0 ? ' active' : '');
-                    t.addEventListener('click', function () {
-                        pImg.src = src;
-                        pThumbs.querySelectorAll('.pmodal-thumb').forEach(x => x.classList.remove('active'));
-                        this.classList.add('active');
-                        setupZoom();
+                    t.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        setModalImage(i);
                     });
                     pThumbs.appendChild(t);
-                });
-
-                // Init zoom after image loads
-                if (pImg.complete && pImg.naturalWidth > 0) {
-                    setupZoom();
-                } else {
-                    pImg.addEventListener('load', setupZoom, { once: true });
-                }
-            }
-
-            // ── ZOOM (Flipkart-style) ─────────────────────────────
-            // ── ZOOM — fixed viewport box ──────────────────────
-            var _zoomBox = null;
-
-            function ensureZoomBox() {
-                if (_zoomBox) return _zoomBox;
-                var box = document.createElement('div');
-                box.id = '_zbox';
-                box.style.cssText = 'display:none;position:fixed;width:360px;height:360px;'
-                    + 'border:1px solid #e2d5c0;border-top:2px solid #b8943f;background:#fff;'
-                    + 'overflow:hidden;box-shadow:0 12px 48px rgba(28,24,20,.22);z-index:9999;pointer-events:none;';
-                var img = document.createElement('img');
-                img.id = '_zimg';
-                img.style.cssText = 'position:absolute;max-width:none;pointer-events:none;';
-                box.appendChild(img);
-                document.body.appendChild(box);
-                _zoomBox = box;
-                return box;
-            }
-
-            function setupZoom() {
-                var wrap = document.getElementById('zoomWrap');
-                var lens = document.getElementById('zoomLens');
-                var mImg = document.getElementById('pmodalImg');
-                if (!wrap || !lens || !mImg) return;
-
-                // Remove previous listeners via clone
-                var nw = wrap.cloneNode(true);
-                wrap.parentNode.replaceChild(nw, wrap);
-                wrap = document.getElementById('zoomWrap');
-                lens = document.getElementById('zoomLens');
-
-                var ZOOM = 3.5;
-                var box, rImg;
-
-                wrap.addEventListener('mouseenter', function () {
-                    if (window.innerWidth <= 900) return;
-                    box = ensureZoomBox();
-                    rImg = document.getElementById('_zimg');
-                    var src = document.getElementById('pmodalImg').src;
-                    rImg.src = src;
-                    rImg.style.width = (wrap.offsetWidth * ZOOM) + 'px';
-                    rImg.style.height = (wrap.offsetHeight * ZOOM) + 'px';
-                    box.style.display = 'block';
-                    lens.style.display = 'block';
-                });
-
-                wrap.addEventListener('mousemove', function (e) {
-                    if (window.innerWidth <= 900 || !box) return;
-                    var rect = wrap.getBoundingClientRect();
-                    var lw = lens.offsetWidth;
-                    var lh = lens.offsetHeight;
-                    var lx = Math.max(0, Math.min(e.clientX - rect.left - lw / 2, wrap.offsetWidth - lw));
-                    var ly = Math.max(0, Math.min(e.clientY - rect.top - lh / 2, wrap.offsetHeight - lh));
-                    lens.style.left = lx + 'px';
-                    lens.style.top = ly + 'px';
-                    rImg.style.left = -(lx * ZOOM) + 'px';
-                    rImg.style.top = -(ly * ZOOM) + 'px';
-                    // Position box to right of modal
-                    var mr = document.getElementById('pmodal').getBoundingClientRect();
-                    var bh = box.offsetHeight;
-                    var top = Math.max(10, Math.min(e.clientY - bh / 2, window.innerHeight - bh - 10));
-                    box.style.left = (mr.right + 14) + 'px';
-                    box.style.top = top + 'px';
-                });
-
-                wrap.addEventListener('mouseleave', function () {
-                    if (box) box.style.display = 'none';
-                    lens.style.display = 'none';
                 });
             }
 
             function closeModal() {
+                hideZoom();
                 backdrop.classList.remove('open');
                 document.body.style.overflow = '';
             }
@@ -2107,7 +2148,42 @@
                 });
             });
 
-            
+            // Close
+            pClose.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', function (e) {
+                if (e.target === backdrop) closeModal();
+            });
+
+            // Prev / Next
+            pPrev.addEventListener('click', function () {
+                if (currentThumbs.length > 1) {
+                    setModalImage(currentThumbIdx - 1);
+                } else {
+                    modalIdx = (modalIdx - 1 + modalCards.length) % modalCards.length;
+                    renderModal();
+                    pmodal.scrollTop = 0;
+                    if (typeof resetAI === 'function') resetAI();
+                }
+            });
+            pNext.addEventListener('click', function () {
+                if (currentThumbs.length > 1) {
+                    setModalImage(currentThumbIdx + 1);
+                } else {
+                    modalIdx = (modalIdx + 1) % modalCards.length;
+                    renderModal();
+                    pmodal.scrollTop = 0;
+                    if (typeof resetAI === 'function') resetAI();
+                }
+            });
+
+            // Keyboard
+            document.addEventListener('keydown', function (e) {
+                if (!backdrop.classList.contains('open')) return;
+                if (e.key === 'Escape') closeModal();
+                if (e.key === 'ArrowLeft') { pPrev.click(); }
+                if (e.key === 'ArrowRight') { pNext.click(); }
+            });
+
             // ── Hover slideshow on cards (Smooth fade, no zoom, original dimensions) ──
             cards.forEach(function (c) {
                 var rawThumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|').filter(Boolean) : [];
