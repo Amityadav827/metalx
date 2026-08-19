@@ -1,0 +1,6 @@
+﻿__MACOSX/
+.vscode/
+*.pyc
+__pycache__/
+.DS_Store
+image.png

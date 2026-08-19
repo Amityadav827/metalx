@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetalX — Image Sorter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #e8d5a3;
+      user-select: none
+    }
+
+    /* ── TOP BAR ── */
+    h1 {
+      padding: 12px 20px;
+      font-size: .9rem;
+      color: #d4aa5f;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tip {
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    /* ── CATEGORIES PANEL ── */
+    .cat-panel {
+      background: #0d0d0d;
+      border-bottom: 1px solid #222;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .cat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .label {
+      font-size: 10px;
+      color: #4b5563;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+
+    .cat-btn {
+      padding: 5px 12px;
+      border: 1.5px solid;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: transparent;
+      transition: .12s;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cat-btn:hover {
+      filter: brightness(1.4)
+    }
+
+    .cat-btn.sel {
+      filter: brightness(1.5);
+      box-shadow: 0 0 0 2px currentColor
+    }
+
+    .cat-btn .del {
+      font-size: 11px;
+      line-height: 1;
+      opacity: .5;
+      padding: 0 1px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    .cat-btn .del:hover {
+      opacity: 1
+    }
+
+    /* ── ADD CATEGORY ROW ── */
+    .add-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .cat-name-input {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #e8d5a3;
+      padding: 5px 10px;
+      font-size: 11px;
+      width: 160px;
+      outline: none;
+    }
+
+    .cat-name-input:focus {
+      border-color: #9a7b3f;
+    }
+
+    .color-input {
+      width: 36px;
+      height: 28px;
+      border: 1px solid #333;
+      background: none;
+      cursor: pointer;
+      padding: 1px;
+    }
+
+    .add-btn {
+      padding: 5px 14px;
+      background: #9a7b3f;
+      color: #fff;
+      border: none;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background: #b8943f;
+    }
+
+    .add-hint {
+      font-size: 10px;
+      color: #4b5563;
+    }
+
+    /* ── STATS ── */
+    .stats {
+      padding: 5px 20px;
+      font-size: 11px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      background: #0a0a0a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 2px;
+      padding: 8px;
+    }
+
+    .card {
+      position: relative;
+      aspect-ratio: 1;
+      cursor: pointer;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border-color .1s;
+      background: #1a1a1a;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card .badge {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      display: none;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 2px 5px;
+      color: #fff;
+      border-radius: 1px;
+      max-width: calc(100% - 4px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card.tagged .badge {
+      display: block;
+    }
+
+    .card .num {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, .7);
+      color: #9ca3af;
+      font-size: 9px;
+      padding: 2px 4px;
+      text-align: center;
+    }
+
+    .card.tagged .num {
+      color: #fff;
+    }
+
+    /* ── EXPORT ── */
+    .export {
+      padding: 14px 20px;
+      border-top: 1px solid #222;
+      background: #0d0d0d;
+    }
+
+    .export h3 {
+      color: #d4aa5f;
+      font-size: .85rem;
+      margin-bottom: 8px;
+    }
+
+    #out {
+      width: 100%;
+      height: 160px;
+      background: #0a0a0a;
+      color: #86efac;
+      border: 1px solid #1f2937;
+      padding: 8px;
+      font-size: 11px;
+      font-family: monospace;
+      resize: vertical;
+    }
+
+    .export-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .exp-btn {
+      padding: 8px 20px;
+      background: #9a7b3f;
+      color: #fff;
+      border: none;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .exp-btn:hover {
+      background: #b8943f;
+    }
+
+    .clr-btn {
+      padding: 8px 16px;
+      background: transparent;
+      color: #ef4444;
+      border: 1px solid #ef4444;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .clr-btn:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>
+    MetalX — Image Sorter
+    <span class="tip">Select category → click image &nbsp;|&nbsp; <b>Shift+click</b> = range</span>
+  </h1>
+
+  <!-- CATEGORIES PANEL -->
+  <div class="cat-panel">
+    <div class="cat-row" id="catRow">
+      <span class="label">Category:</span>
+      <!-- buttons injected by JS -->
+    </div>
+    <div class="add-row">
+      <span class="label">Add:</span>
+      <input class="cat-name-input" id="newCatName" type="text" placeholder="e.g. Baluster Twist" maxlength="30">
+      <input class="color-input" id="newCatColor" type="color" value="#60a5fa" title="Pick color">
+      <button class="add-btn" onclick="addCategory()">+ Add Category</button>
+      <span class="add-hint">Give it a name &amp; colour, then click Add</span>
+    </div>
+  </div>
+
+  <div class="stats" id="stats">
+    <span class="stat"><b>0</b>&nbsp;/ 79 tagged</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="export">
+    <h3>Export — Click Generate, then paste the output to me</h3>
+    <textarea id="out" placeholder="Click Generate Output..."></textarea>
+    <div class="export-row">
+      <button class="exp-btn" onclick="genOut()">Generate Output</button>
+      <button class="clr-btn" onclick="clearAll()">Clear All</button>
+    </div>
+  </div>
+
+  <script>
+    /* ── IMAGE LIST ── */
+    const NAMES = ["DSC05595", "DSC05622", "DSC05624", "DSC05627", "DSC05629", "DSC05633", "DSC05639", "DSC05645", "DSC05647", "DSC05649", "DSC05660", "DSC05663", "DSC05672", "DSC05674", "DSC05681", "DSC05687", "DSC05694", "DSC05697", "DSC05702", "DSC05706", "DSC05711", "DSC05718", "DSC05722", "DSC05729", "DSC05731", "DSC05739", "DSC05746", "DSC05748", "DSC05751", "DSC05752", "DSC05756", "DSC05763", "DSC05766", "DSC05769", "DSC05773", "DSC05776", "DSC05778", "DSC05780", "DSC05784", "DSC05795", "DSC05797", "DSC05798", "DSC05806", "DSC05810", "DSC05815", "DSC05818", "DSC05824", "DSC05832", "DSC05840", "DSC05841", "DSC05850", "DSC05852", "DSC05864", "DSC05871", "DSC05872", "DSC05875", "DSC05876", "DSC05882", "DSC05884", "DSC05886", "DSC05896", "DSC05901", "DSC05908", "DSC05913", "DSC05914", "DSC05919", "DSC05921", "DSC05925", "DSC05931", "DSC05932", "DSC05940", "DSC05941", "DSC05947", "DSC05956", "DSC05958", "DSC05961", "DSC05965", "DSC05969", "DSC05971"];
+
+    /* ── CATEGORY STATE ── */
+    let cats = [
+      { id: 'facade-modern', name: 'Facade Modern', color: '#3b82f6' },
+      { id: 'facade-classical', name: 'Facade Classical', color: '#8b5cf6' },
+      { id: 'railings-modern', name: 'Railings Modern', color: '#10b981' },
+      { id: 'railings-classical', name: 'Railings Classical', color: '#f59e0b' },
+      { id: 'balusters', name: 'Balusters', color: '#ef4444' },
+      { id: 'gates', name: 'Gates & Grilles', color: '#f97316' },
+      { id: 'handrails', name: 'Handrails', color: '#d946ef' },
+      { id: 'ignore', name: 'Ignore', color: '#374151' },
+    ];
+
+    let activeCatId = cats[0].id;
+    let lastClicked = -1;
+    const assigned = {};   // name → catId
+
+    /* ─────────────────────────────────────
+       RENDER CATEGORY BUTTONS
+    ───────────────────────────────────── */
+    function renderCatRow() {
+      const row = document.getElementById('catRow');
+      row.innerHTML = '<span class="label">Category:</span>';
+      cats.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn' + (cat.id === activeCatId ? ' sel' : '');
+        btn.dataset.id = cat.id;
+        btn.style.color = cat.color;
+        btn.style.borderColor = cat.color;
+        btn.innerHTML = `${cat.name} <button class="del" title="Delete category" onclick="deleteCat(event,'${cat.id}')">✕</button>`;
+        btn.addEventListener('click', () => { activeCatId = cat.id; renderCatRow(); });
+        row.appendChild(btn);
+      });
+    }
+
+    /* ─────────────────────────────────────
+       ADD / DELETE CATEGORY
+    ───────────────────────────────────── */
+    function addCategory() {
+      const nameEl = document.getElementById('newCatName');
+      const colorEl = document.getElementById('newCatColor');
+      const name = nameEl.value.trim();
+      if (!name) { nameEl.focus(); return; }
+      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      if (cats.find(c => c.id === id)) { nameEl.value = ''; return; }
+      cats.push({ id, name, color: colorEl.value });
+      nameEl.value = '';
+      activeCatId = id;
+      renderCatRow();
+      updateStats();
+    }
+
+    function deleteCat(e, id) {
+      e.stopPropagation();
+      if (!confirm('Delete category "' + id + '"?\nAssigned images will be untagged.')) return;
+      cats = cats.filter(c => c.id !== id);
+      // untag images assigned to this cat
+      Object.keys(assigned).forEach(name => {
+        if (assigned[name] === id) {
+          delete assigned[name];
+          const idx = NAMES.indexOf(name);
+          if (idx >= 0) {
+            const card = document.getElementById('grid').children[idx];
+            card.removeAttribute('data-a');
+            card.classList.remove('tagged');
+            card.querySelector('.badge').textContent = '';
+          }
+        }
+      });
+      if (activeCatId === id) activeCatId = cats[0]?.id || '';
+      renderCatRow();
+      updateStats();
+    }
+
+    /* ─────────────────────────────────────
+       BUILD IMAGE GRID
+    ───────────────────────────────────── */
+    const grid = document.getElementById('grid');
+    const BLANK = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+    const lazyObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const img = e.target.querySelector('img');
+        if (img && img.dataset.src) { img.src = img.dataset.src; delete img.dataset.src; }
+        lazyObserver.unobserve(e.target);
+      });
+    }, { rootMargin: '300px' });
+
+    NAMES.forEach((name, idx) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'c' + idx;
+      card.innerHTML = `
+    <img data-src="images/thumbs/${name}.JPG" src="${BLANK}" alt="">
+    <span class="badge"></span>
+    <div class="num">${name.slice(-4)}</div>`;
+      card.addEventListener('click', e => handleClick(idx, e));
+      grid.appendChild(card);
+      lazyObserver.observe(card);
+    });
+
+    /* ─────────────────────────────────────
+       CLICK HANDLER (single + shift range)
+    ───────────────────────────────────── */
+    function handleClick(idx, e) {
+      if (!activeCatId) return;
+      if (e.shiftKey && lastClicked >= 0) {
+        const lo = Math.min(lastClicked, idx);
+        const hi = Math.max(lastClicked, idx);
+        for (let i = lo; i <= hi; i++) assignCard(i);
+      } else {
+        assignCard(idx);
+        lastClicked = idx;
+      }
+    }
+
+    function assignCard(idx) {
+      const name = NAMES[idx];
+      const cat = cats.find(c => c.id === activeCatId);
+      if (!cat) return;
+      assigned[name] = cat.id;
+      const card = document.getElementById('c' + idx);
+      card.dataset.a = cat.id;
+      card.style.borderColor = cat.color;
+      card.classList.add('tagged');
+      const badge = card.querySelector('.badge');
+      badge.textContent = cat.name;
+      badge.style.background = cat.color;
+      updateStats();
+    }
+
+    /* ─────────────────────────────────────
+       STATS BAR
+    ───────────────────────────────────── */
+    function updateStats() {
+      const counts = {};
+      cats.forEach(c => counts[c.id] = 0);
+      Object.values(assigned).forEach(id => { if (counts[id] !== undefined) counts[id]++; });
+      const total = Object.keys(assigned).length;
+      let html = `<span class="stat"><b>${total}</b>&nbsp;/ ${NAMES.length} tagged</span>`;
+      cats.filter(c => c.id !== 'ignore' && counts[c.id] > 0).forEach(c => {
+        html += `<span class="stat">
+      <span class="dot" style="background:${c.color}"></span>
+      ${c.name}: ${counts[c.id]}
+    </span>`;
+      });
+      document.getElementById('stats').innerHTML = html;
+    }
+
+    /* ─────────────────────────────────────
+       CLEAR + EXPORT
+    ───────────────────────────────────── */
+    function clearAll() {
+      if (!confirm('Clear all assignments?')) return;
+      Object.keys(assigned).forEach(k => delete assigned[k]);
+      document.querySelectorAll('.card').forEach(c => {
+        c.removeAttribute('data-a');
+        c.style.borderColor = '';
+        c.classList.remove('tagged');
+        c.querySelector('.badge').textContent = '';
+      });
+      lastClicked = -1;
+      updateStats();
+    }
+
+    function genOut() {
+      const groups = {};
+      for (const [name, catId] of Object.entries(assigned)) {
+        if (catId === 'ignore') continue;
+        const cat = cats.find(c => c.id === catId);
+        const label = cat ? cat.name : catId;
+        if (!groups[label]) groups[label] = [];
+        groups[label].push(name + '.JPG');
+      }
+      // also list untagged
+      const untagged = NAMES.filter(n => !assigned[n]);
+
+      let out = 'CATEGORY MAPPING:\n\n';
+      for (const [label, files] of Object.entries(groups)) {
+        out += `${label.toUpperCase()} (${files.length}):\n${files.join(', ')}\n\n`;
+      }
+      if (untagged.length) {
+        out += `UNTAGGED (${untagged.length}):\n${untagged.map(n => n + '.JPG').join(', ')}\n`;
+      }
+      const ta = document.getElementById('out');
+      ta.value = out;
+      ta.select();
+    }
+
+    /* ─────────────────────────────────────
+       KEYBOARD SHORTCUT — Enter to add cat
+    ───────────────────────────────────── */
+    document.getElementById('newCatName').addEventListener('keydown', e => {
+      if (e.key === 'Enter') addCategory();
+    });
+
+    /* ── INIT ── */
+    renderCatRow();
+    updateStats();
+  </script>
+</body>
+
+</html>

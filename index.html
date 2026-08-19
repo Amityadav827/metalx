@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetalX — Precision Metal Facade Systems & Railings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="page-home">
+
+    <!-- ============ HEADER ============ -->
+    <header class="site-header" id="site-header">
+        <div class="container">
+            <div class="header-inner">
+
+                <div class="site-logo">
+                    <a href="index.html" aria-label="MetalX Home">
+                        <span class="site-title">MetalX</span>
+                        <span class="site-tagline">Architectural Metal Works</span>
+                    </a>
+                </div>
+
+                <nav class="primary-nav" aria-label="Primary navigation">
+
+                    <div class="nav-item">
+                        <a href="index.html" class="nav-link active">Home</a>
+                    </div>
+
+                    <div class="nav-item">
+                        <a href="about-us.html" class="nav-link">About Us</a>
+                    </div>
+
+                    <div class="nav-item">
+                        <a href="company.html" class="nav-link">Company</a>
+                    </div>
+
+                    <div class="nav-item has-dropdown">
+                        <a href="products.html" class="nav-link">Products</a>
+                        <div class="nav-dropdown" role="region" aria-label="Products menu">
+                            <div class="dropdown-items">
+                                <a href="railings-modern.html" class="dropdown-item">Railings</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nav-item">
+                        <a href="contact-us.html" class="nav-link">Contact Us</a>
+                    </div>
+
+                </nav>
+
+                <button class="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ MOBILE MENU OVERLAY ============ -->
+    <div class="mobile-menu-overlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
+        <div class="mobile-menu-header">
+            <span class="site-title">MetalX</span>
+            <button class="mobile-close" aria-label="Close menu">Close ✕</button>
+        </div>
+
+        <ul>
+            <li class="mobile-nav-item">
+                <a href="index.html" class="mobile-nav-link">Home</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="about-us.html" class="mobile-nav-link">About Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="company.html" class="mobile-nav-link">Company</a>
+            </li>
+            <li class="mobile-nav-item">
+                <div class="mobile-nav-link mobile-nav-toggle">
+                    Products <span class="toggle-icon">+</span>
+                </div>
+                <div class="mobile-sub-menu">
+                    <a href="railings-modern.html" class="mobile-sub-link">Railings</a>
+                </div>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="contact-us.html" class="mobile-nav-link">Contact Us</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- ============ HERO CAROUSEL ============ -->
+    <section class="hero-carousel entrance-active" id="heroCarousel" aria-label="Hero slideshow">
+
+        <!-- ── ENTRANCE BANNER ── -->
+        <div class="mx-entrance" id="mxEntrance" aria-label="Choose a MetalX category">
+            <div class="mx-entrance-bg">
+                <img src="images/banner/hero-1.png" alt="MetalX architectural metalwork">
+            </div>
+            <div class="mx-entrance-overlay"></div>
+            <div class="mx-entrance-inner container">
+                <div class="mx-entrance-copy">
+                    <p class="mx-entrance-kicker">Architectural Metal Works</p>
+                    <h1>MetalX</h1>
+                    <p class="mx-entrance-sub">Precision-crafted systems for facades and railings, shaped with restraint,
+                        proportion, and enduring material beauty.</p>
+                </div>
+                <div class="mx-entrance-choices" aria-label="Select product category">
+                    <button class="mx-entrance-choice" id="mxEntranceRailings" type="button">
+                        <span class="choice-number">01</span>
+                        <span class="choice-title">Railings</span>
+                        <span class="choice-line"></span>
+                        <span class="choice-meta">Balustrades, handrails, staircases</span>
+                    </button>
+                    <a href="facades-coming-soon.html" class="mx-entrance-choice" id="mxEntranceFacades">
+                        <span class="choice-number">02</span>
+                        <span class="choice-title">Facades</span>
+                        <span class="choice-line"></span>
+                        <span class="choice-meta">Cladding, screens, exterior systems</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── WATERMARK ── -->
+        <div class="hero-watermark" aria-hidden="true">MetalX</div>
+
+        <!-- ── SLIDES ── -->
+        <div class="carousel-track" id="carouselTrack">
+
+            <!-- Slide 1 -->
+            <div class="carousel-slide active" data-category="facades">
+                <div class="slide-bg">
+                    <img src="images/banner/hero-1.png" alt="Modern architectural facade">
+                </div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content container">
+                    <p class="hero-eyebrow">Facade Systems</p>
+                    <h1>Precision in<br><em>Every Panel.</em></h1>
+                    <p class="hero-sub">Engineered facade systems that define the skyline — from sleek modern cladding
+                        to heritage ornamental screens.</p>
+                    <div class="slide-actions">
+                        <a href="facade-modern.html" class="btn btn-gold btn-arrow">Modern Facades</a>
+                        <a href="facade-classical.html" class="btn btn-light">Classical Facades</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="carousel-slide" data-category="railings">
+                <div class="slide-bg">
+                    <img src="images/banner/hero-2.png" alt="Premium glass balustrade railing">
+                </div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content container">
+                    <p class="hero-eyebrow">Railing Systems</p>
+                    <h1>Where Safety<br><em>Meets Elegance.</em></h1>
+                    <p class="hero-sub">Glass balustrades, cable railings, and wrought iron balustrades — crafted for
+                        spaces that command attention.</p>
+                    <div class="slide-actions">
+                        <a href="railings-modern.html" class="btn btn-gold btn-arrow">Modern Railings</a>
+                        <a href="railings-classical.html" class="btn btn-light">Classical Railings</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="carousel-slide" data-category="railings facades">
+                <div class="slide-bg">
+                    <img src="images/banner/hero-3.png" alt="Classical ornamental metalwork">
+                </div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content container">
+                    <p class="hero-eyebrow">Classical Collection</p>
+                    <h1>Heritage<br><em>Reborn in Metal.</em></h1>
+                    <p class="hero-sub">Centuries of architectural tradition reimagined — ornate cornices, wrought iron
+                        balustrades, and heritage gate panels.</p>
+                    <div class="slide-actions">
+                        <a href="facade-classical.html" class="btn btn-gold btn-arrow">Explore Classical</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="carousel-slide" data-category="facades">
+                <div class="slide-bg">
+                    <img src="images/banner/about-banner.png" alt="Contemporary building facade fins">
+                </div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content container">
+                    <p class="hero-eyebrow">Modern Collection</p>
+                    <h1>Clean Lines.<br><em>Bold Statements.</em></h1>
+                    <p class="hero-sub">Linear fins, perforated screens, and cassette cladding systems for architecture
+                        that speaks the language of now.</p>
+                    <div class="slide-actions">
+                        <a href="facade-modern.html" class="btn btn-gold btn-arrow">Explore Modern</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5 -->
+            <div class="carousel-slide" data-category="railings facades">
+                <div class="slide-bg">
+                    <img src="images/banner/contact-banner.png" alt="Ornamental wrought iron gate">
+                </div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content container">
+                    <p class="hero-eyebrow">Bespoke Fabrication</p>
+                    <h1>Crafted for<br><em>Generations.</em></h1>
+                    <p class="hero-sub">Every project is a collaboration. Bring us your vision — we engineer it into
+                        something enduring.</p>
+                    <div class="slide-actions">
+                        <a href="contact-us.html" class="btn btn-gold btn-arrow">Start a Project</a>
+                        <a href="products.html" class="btn btn-light">View All Products</a>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /carousel-track -->
+
+        <!-- ── NAVIGATION ARROWS ── -->
+        <button class="carousel-arrow carousel-prev" id="carouselPrev" aria-label="Previous slide">
+            <span>&#8592;</span>
+        </button>
+        <button class="carousel-arrow carousel-next" id="carouselNext" aria-label="Next slide">
+            <span>&#8594;</span>
+        </button>
+
+        <!-- ── DOTS ── -->
+        <div class="carousel-dots" role="tablist" aria-label="Slide navigation">
+            <button class="carousel-dot active" data-slide="0" role="tab" aria-label="Slide 1"
+                aria-selected="true"></button>
+            <button class="carousel-dot" data-slide="1" role="tab" aria-label="Slide 2"></button>
+            <button class="carousel-dot" data-slide="2" role="tab" aria-label="Slide 3"></button>
+            <button class="carousel-dot" data-slide="3" role="tab" aria-label="Slide 4"></button>
+            <button class="carousel-dot" data-slide="4" role="tab" aria-label="Slide 5"></button>
+        </div>
+
+        <!-- ── SLIDE COUNTER ── -->
+        <div class="carousel-counter" aria-live="polite">
+            <span id="currentSlide">01</span>
+            <span class="counter-sep"></span>
+            <span class="counter-total">05</span>
+        </div>
+
+        <!-- ── SCROLL HINT ── -->
+        <div class="hero-scroll">
+            <div class="scroll-line"></div>
+            <span>Scroll</span>
+        </div>
+
+        <!-- ── PROGRESS BAR ── -->
+        <div class="carousel-progress">
+            <div class="carousel-progress-bar" id="progressBar"></div>
+        </div>
+
+    </section>
+
+    <!-- ============ BRAND STATEMENT ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="brand-statement fade-up">
+                <h6>Our Philosophy</h6>
+                <div class="gold-ornament"><span></span></div>
+                <blockquote>
+                    "Where structural integrity meets architectural beauty — metal reimagined as a language of design."
+                </blockquote>
+                <div class="divider"></div>
+                <p>MetalX specialises in bespoke facade systems and precision-crafted railings that define the character
+                    of modern and classical architecture. Every project is an expression of craftsmanship, engineered
+                    for generations.</p>
+                <a href="about-us.html" class="btn btn-gold-outline btn-arrow" style="margin-top:28px;">Our Story</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ PRODUCT CATEGORIES ============ -->
+    <section class="section-sm bg-cream">
+        <div class="container">
+            <div class="text-center fade-up" style="margin-bottom:48px;">
+                <h6>What We Build</h6>
+                <div class="divider"></div>
+                <h2>Our Product Range</h2>
+            </div>
+            <div class="products-grid fade-up" style="gap:24px; margin-bottom:48px;">
+
+                <a href="products.html" class="px-card" style="background:var(--white); border:1px solid var(--beige-mid);">
+                    <div class="px-card-img" style="padding-top:100%;">
+                        <img src="images/products/balusters/square-baluster.png" alt="Square Baluster" loading="lazy" style="object-fit:contain; padding:18px;">
+                    </div>
+                    <div class="px-card-info" style="padding:16px 18px; text-align:center;">
+                        <span class="px-card-category" style="margin-bottom:0;">Balusters</span>
+                    </div>
+                </a>
+
+                <a href="products.html" class="px-card" style="background:var(--white); border:1px solid var(--beige-mid);">
+                    <div class="px-card-img" style="padding-top:100%;">
+                        <img src="images/products/balusters/twist-baluster.png" alt="Twist Baluster" loading="lazy" style="object-fit:contain; padding:18px;">
+                    </div>
+                    <div class="px-card-info" style="padding:16px 18px; text-align:center;">
+                        <span class="px-card-category" style="margin-bottom:0;">Balusters</span>
+                    </div>
+                </a>
+
+                <a href="products.html" class="px-card" style="background:var(--white); border:1px solid var(--beige-mid);">
+                    <div class="px-card-img" style="padding-top:100%;">
+                        <img src="images/products/partitions/DSC05776_sq.JPG" alt="Geometric Partition Screen" loading="lazy" style="object-fit:contain; padding:18px;">
+                    </div>
+                    <div class="px-card-info" style="padding:16px 18px; text-align:center;">
+                        <span class="px-card-category" style="margin-bottom:0;">Partitions</span>
+                    </div>
+                </a>
+
+                <a href="products.html" class="px-card" style="background:var(--white); border:1px solid var(--beige-mid);">
+                    <div class="px-card-img" style="padding-top:100%;">
+                        <img src="images/products/balusters/fluted-baluster.png" alt="Fluted Baluster" loading="lazy" style="object-fit:contain; padding:18px;">
+                    </div>
+                    <div class="px-card-info" style="padding:16px 18px; text-align:center;">
+                        <span class="px-card-category" style="margin-bottom:0;">Balusters</span>
+                    </div>
+                </a>
+
+                <a href="products.html" class="px-card" style="background:var(--white); border:1px solid var(--beige-mid);">
+                    <div class="px-card-img" style="padding-top:100%;">
+                        <img src="images/products/partitions/DSC05778_sq.JPG" alt="Floral Jali Panel" loading="lazy" style="object-fit:contain; padding:18px;">
+                    </div>
+                    <div class="px-card-info" style="padding:16px 18px; text-align:center;">
+                        <span class="px-card-category" style="margin-bottom:0;">Partitions</span>
+                    </div>
+                </a>
+
+                <a href="products.html" class="px-card" style="background:var(--white); border:1px solid var(--beige-mid);">
+                    <div class="px-card-img" style="padding-top:100%;">
+                        <img src="images/products/partitions/DSC05864_sq.JPG" alt="Moroccan Jali Screen" loading="lazy" style="object-fit:contain; padding:18px;">
+                    </div>
+                    <div class="px-card-info" style="padding:16px 18px; text-align:center;">
+                        <span class="px-card-category" style="margin-bottom:0;">Partitions</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="text-center fade-up">
+                <a href="products.html" class="btn btn-gold btn-arrow">More Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ STYLING OPTIONS ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="text-center fade-up" style="margin-bottom:56px;">
+                <h6>Design Language</h6>
+                <div class="divider"></div>
+                <h2>Two Distinct Styles</h2>
+                <p class="section-lead">Each product line is available in two carefully considered design languages —
+                    Modern and Classical — to complement any architectural vision.</p>
+            </div>
+
+            <div class="split-section fade-up">
+                <div class="split-image">
+                    <img src="images/banner/hero-2.png" alt="Modern precision metalwork — MetalX">
+                </div>
+                <div class="split-content pad-left bg-cream">
+                    <h6>Style 01</h6>
+                    <div class="divider left"></div>
+                    <h2>Modern</h2>
+                    <p>Clean lines, minimal profiles, and industrial precision define our Modern range. Designed for
+                        contemporary architecture — glass curtain walls, sleek handrails, and geometric facade panels
+                        that speak the language of now.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:32px;">
+                        <a href="facade-modern.html" class="btn btn-gold-outline">Modern Facades</a>
+                        <a href="railings-modern.html" class="btn btn-outline">Modern Railings</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="split-section fade-up" style="margin-top:4px;">
+                <div class="split-content pad-right bg-cream">
+                    <h6>Style 02</h6>
+                    <div class="divider left"></div>
+                    <h2>Classical</h2>
+                    <p>Ornate detailing, time-honoured proportions, and rich craftsmanship characterise our Classical
+                        range. Wrought iron patterns, decorative balusters, and heritage facade systems built to endure
+                        centuries.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:32px;">
+                        <a href="facade-classical.html" class="btn btn-gold-outline">Classical Facades</a>
+                        <a href="railings-classical.html" class="btn btn-outline">Classical Railings</a>
+                    </div>
+                </div>
+                <div class="split-image">
+                    <img src="images/banner/hero-3.png" alt="Classical ornamental metalwork — MetalX">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ STATS ============ -->
+    <section class="section-sm">
+        <div class="container">
+            <div class="stats-row fade-up">
+                <div class="stat-item">
+                    <div class="stat-number">18+</div>
+                    <div class="stat-label">Years of Experience</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Projects Delivered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">40+</div>
+                    <div class="stat-label">Cities Served</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Custom Fabrication</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ WHY METALX ============ -->
+    <section class="section bg-beige">
+        <div class="container">
+            <div class="text-center fade-up" style="margin-bottom:56px;">
+                <h6>Why MetalX</h6>
+                <div class="divider"></div>
+                <h2>Built on Four Pillars</h2>
+            </div>
+
+            <div class="values-grid">
+                <div class="value-item fade-up">
+                    <div class="value-number">01</div>
+                    <div class="value-title">Precision Engineering</div>
+                    <p class="value-text">Every piece fabricated to sub-millimetre tolerances using state-of-the-art CNC
+                        machinery and laser cutting technology.</p>
+                </div>
+                <div class="value-item fade-up">
+                    <div class="value-number">02</div>
+                    <div class="value-title">Bespoke Craftsmanship</div>
+                    <p class="value-text">No two projects are alike. We collaborate closely with architects and
+                        designers to deliver truly custom solutions.</p>
+                </div>
+                <div class="value-item fade-up">
+                    <div class="value-number">03</div>
+                    <div class="value-title">Premium Materials</div>
+                    <p class="value-text">Grade A stainless steel, mild steel, aluminium, and specialty alloys sourced
+                        from certified suppliers and treated for longevity.</p>
+                </div>
+                <div class="value-item fade-up">
+                    <div class="value-number">04</div>
+                    <div class="value-title">End-to-End Service</div>
+                    <p class="value-text">From initial concept and material selection through fabrication, delivery, and
+                        on-site installation — we own every step.</p>
+                </div>
+                <div class="value-item fade-up">
+                    <div class="value-number">05</div>
+                    <div class="value-title">Timely Delivery</div>
+                    <p class="value-text">Structured project management ensures your facade or railing system is
+                        delivered and installed on schedule, every time.</p>
+                </div>
+                <div class="value-item fade-up">
+                    <div class="value-number">06</div>
+                    <div class="value-title">After-Sales Support</div>
+                    <p class="value-text">Our relationship doesn't end at installation. We provide maintenance guidance
+                        and support for the life of each product.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FEATURED PROJECTS ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="text-center fade-up" style="margin-bottom:56px;">
+                <h6>Portfolio</h6>
+                <div class="divider"></div>
+                <h2>Featured Projects</h2>
+                <p class="section-lead">A glimpse into the spaces we've defined — from grand commercial facades to
+                    intimate residential railings.</p>
+            </div>
+
+            <div class="projects-grid">
+
+                <a href="contact-us.html" class="project-card project-card--tall fade-up">
+                    <img src="images/banner/hero-1.png" alt="MetalX installation — Grand Staircase Mumbai">
+                    <div class="project-card-overlay">
+                        <span class="project-card-type">Balusters · Classical</span>
+                        <h3 class="project-card-name">Grand Staircase<br>Mumbai</h3>
+                    </div>
+                </a>
+
+                <div class="projects-col">
+                    <a href="contact-us.html" class="project-card fade-up">
+                        <img src="images/banner/about-banner.png" alt="MetalX partition installation — Delhi">
+                        <div class="project-card-overlay">
+                            <span class="project-card-type">Partitions · Decorative</span>
+                            <h3 class="project-card-name">Heritage Bungalow<br>Delhi</h3>
+                        </div>
+                    </a>
+                    <a href="contact-us.html" class="project-card fade-up">
+                        <img src="images/banner/contact-banner.png" alt="MetalX railing installation — Gurugram">
+                        <div class="project-card-overlay">
+                            <span class="project-card-type">Balusters · Modern</span>
+                            <h3 class="project-card-name">Luxury Villa<br>Gurugram</h3>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="text-center" style="margin-top:48px;">
+                <a href="contact-us.html" class="btn btn-gold-outline btn-arrow">Discuss Your Project</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TESTIMONIAL STRIP ============ -->
+    <section class="section-sm bg-beige">
+        <div class="container">
+            <div class="testimonial-strip fade-up">
+                <div class="testimonial-quote">
+                    <div class="testimonial-mark">&ldquo;</div>
+                    <p class="testimonial-text">MetalX delivered a facade system that became the defining feature of our
+                        project. The attention to detail, quality of fabrication, and on-site execution was exceptional
+                        in every sense.</p>
+                    <div class="testimonial-author">
+                        <span class="testimonial-name">Ar. Priya Mehta</span>
+                        <span class="testimonial-title">Principal Architect, Studio Forma, Gurugram</span>
+                    </div>
+                </div>
+                <div class="testimonial-divider"></div>
+                <div class="testimonial-quote">
+                    <div class="testimonial-mark">&ldquo;</div>
+                    <p class="testimonial-text">The wrought iron railing system for our heritage property was crafted
+                        with a sensitivity that few fabricators possess. It looks like it has always been there.</p>
+                    <div class="testimonial-author">
+                        <span class="testimonial-name">Mr. Rajiv Khanna</span>
+                        <span class="testimonial-title">Homeowner, Civil Lines, Delhi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CTA STRIP ============ -->
+    <section class="section cta-section text-white">
+        <div class="container">
+            <div class="text-center fade-up">
+                <h6 style="color:var(--gold-light);">Start Your Project</h6>
+                <div class="gold-ornament" style="margin-bottom:24px;"><span></span></div>
+                <h2 style="color:var(--white); margin-bottom:16px;">Have a Project in Mind?</h2>
+                <p style="max-width:500px; margin:0 auto 40px;">Tell us about your vision. Our team will design a
+                    solution that fits your architecture, budget, and timeline.</p>
+                <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                    <a href="contact-us.html" class="btn btn-gold btn-arrow">Get in Touch</a>
+                    <a href="products.html" class="btn btn-light">View Products</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+
+                <div class="footer-brand">
+                    <span class="site-title">MetalX</span>
+                    <span class="site-tagline">Architectural Metal Works</span>
+                    <p>MetalX crafts precision facade systems and architectural railings for projects that demand
+                        beauty, durability, and engineering excellence.</p>
+                    <p style="margin-top:8px;">Write to us:<br>
+                        <a href="mailto:info@metalx.in">info@metalx.in</a>
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <div class="footer-col-title">Products</div>
+                    <div class="footer-links">
+                        <a href="facade-modern.html" class="footer-link">Modern Facade Systems</a>
+                        <a href="facade-classical.html" class="footer-link">Classical Facade Systems</a>
+                        <a href="railings-modern.html" class="footer-link">Modern Railings</a>
+                        <a href="railings-classical.html" class="footer-link">Classical Railings</a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <div class="footer-col-title">Company</div>
+                    <div class="footer-links">
+                        <a href="about-us.html" class="footer-link">About Us</a>
+                        <a href="company.html" class="footer-link">Company</a>
+                        <a href="contact-us.html" class="footer-link">Contact Us</a>
+                    </div>
+                </div>
+
+                <div class="footer-newsletter">
+                    <div class="footer-col-title">Stay Updated</div>
+                    <p>Project showcases, material innovations, and insights from the studio — delivered to your inbox.
+                    </p>
+                    <form class="newsletter-form" onsubmit="return false;">
+                        <input type="email" placeholder="Your email address" aria-label="Email address">
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-copyright">© 2026 MetalX Architectural Metal Works. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        (function () {
+            var ent = document.getElementById('mxEntrance');
+            var panelR = document.getElementById('mxEntranceRailings');
+            if (!ent) return;
+
+            function dismiss(category, slideIdx) {
+                ent.classList.add('is-exiting');
+                var carousel = document.getElementById('heroCarousel');
+                if (carousel) carousel.classList.remove('entrance-active');
+                setTimeout(function () { ent.style.display = 'none'; }, 900);
+                var evt = new CustomEvent('mxChoice', { detail: { category: category, slide: slideIdx } });
+                document.dispatchEvent(evt);
+            }
+
+            if (panelR) panelR.addEventListener('click', function () { dismiss('railings', 1); });
+        })();
+    </script>
+
+</body>
+
+</html>

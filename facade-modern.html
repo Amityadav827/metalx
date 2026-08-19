@@ -1,0 +1,2480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Facade Systems — MetalX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c1814'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='%23b8943f'%3EMX%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .products-page-wrap {
+            padding-top: var(--header-height);
+        }
+
+        .products-page-header {
+            padding: 56px 0 0;
+            border-bottom: 1px solid var(--beige-mid);
+        }
+
+        .products-page-header h1 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            margin-bottom: 36px;
+        }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-tab {
+            flex-shrink: 0;
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: .1em;
+            color: var(--ink-muted);
+            padding: 14px 22px;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color .25s, border-color .25s;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .filter-tab:hover {
+            color: var(--ink);
+        }
+
+        .filter-tab.active {
+            color: var(--gold-deep);
+            font-weight: 500;
+            border-bottom-color: var(--gold-mid);
+        }
+
+        /* Grid */
+        .products-grid-wrap {
+            padding: 48px 0 100px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+
+        /* Card */
+        .px-card {
+            display: block;
+            position: relative;
+            border: 1px solid transparent;
+            transition: border-color .25s, box-shadow .25s;
+            background: var(--beige-pale);
+            cursor: pointer;
+        }
+
+        .px-card:hover {
+            border-color: var(--beige-mid);
+            box-shadow: 0 8px 32px rgba(28, 24, 20, .09);
+            z-index: 1;
+        }
+
+        .px-card.hidden {
+            display: none;
+        }
+
+        /* Image — 1:1 square */
+        .px-card-img {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            /* background: var(--beige-light); */
+        }
+
+        .px-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            padding: 16px;
+            transition: transform .65s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .px-card:hover .px-card-img img {
+            transform: scale(1.06);
+        }
+
+        /* Enquire chip */
+        .px-card-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity .25s, transform .25s;
+        }
+
+        .px-card:hover .px-card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .px-enquire {
+            font-family: var(--font-body);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            background: var(--gold-deep);
+            color: var(--white);
+            padding: 6px 12px;
+            display: block;
+        }
+
+        /* Info */
+        .px-card-info {
+            padding: 12px 16px 18px;
+        }
+
+        .px-card-category {
+            font-family: var(--font-body);
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .px-card-name {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 400;
+            color: var(--ink);
+            line-height: 1.25;
+            transition: color .2s;
+        }
+
+        .px-card:hover .px-card-name {
+            color: var(--gold-deep);
+        }
+
+        /* Lightbox */
+        /* ════════════════════════════════════════
+           PRODUCT MODAL — Flipkart style
+           Image left + Specs right
+        ════════════════════════════════════════ */
+        .pmodal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 16, 12, .78);
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .pmodal-backdrop.open {
+            display: flex;
+        }
+
+        .pmodal {
+            background: var(--beige-pale);
+            max-width: 960px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            box-shadow: 0 32px 80px rgba(20, 16, 12, .45);
+            border-top: 3px solid var(--gold-mid);
+        }
+
+        .pmodal-img-panel {
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 32px;
+            min-height: 480px;
+            position: sticky;
+            top: 0;
+            align-self: start;
+        }
+
+        .pmodal-main-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: contain;
+            display: block;
+            transition: opacity .3s ease;
+        }
+
+        /* ── ZOOM SYSTEM ── */
+        .zoom-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        .zoom-wrap .pmodal-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        /* Moving lens box */
+        .zoom-lens {
+            display: none;
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border: 1.5px solid var(--gold-mid);
+            background: rgba(184, 148, 63, 0.07);
+            pointer-events: none;
+            box-shadow: 0 0 0 1px rgba(184, 148, 63, 0.25);
+        }
+
+        /* Zoomed view — right of modal */
+        .zoom-result {
+            display: none;
+            position: absolute;
+            left: calc(100% + 10px);
+            top: 0;
+            width: 360px;
+            height: 360px;
+            border: 1px solid var(--beige-mid);
+            background: var(--white);
+            overflow: hidden;
+            box-shadow: 0 12px 48px rgba(28, 24, 20, 0.2);
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .zoom-result img {
+            position: absolute;
+            max-width: none;
+            pointer-events: none;
+        }
+
+        .pmodal-thumbs {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .pmodal-thumb {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border: 2px solid var(--beige-mid);
+            cursor: pointer;
+            padding: 4px;
+            background: var(--white);
+            transition: border-color .2s;
+        }
+
+        .pmodal-thumb:hover,
+        .pmodal-thumb.active {
+            border-color: var(--gold-mid);
+        }
+
+        /* Hide zoom on mobile/tablet */
+        @media(max-width: 900px) {
+            .zoom-result {
+                display: none !important;
+            }
+
+            .zoom-lens {
+                display: none !important;
+            }
+
+            .zoom-wrap {
+                cursor: default;
+            }
+        }
+
+        /* ── AI ROOM VISUALIZER ── */
+        .ai-visualizer {
+            margin-top: 20px;
+            border-top: 1px solid var(--beige-mid);
+            padding-top: 20px;
+        }
+
+        .ai-toggle-btn {
+            width: 100%;
+            padding: 11px 20px;
+            background: linear-gradient(135deg, var(--ink) 0%, #3d3428 100%);
+            color: var(--gold-light);
+            border: 1px solid rgba(184, 148, 63, 0.3);
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background .25s, border-color .25s;
+        }
+
+        .ai-toggle-btn:hover {
+            background: linear-gradient(135deg, #2a2018 0%, var(--gold-deep) 100%);
+            border-color: var(--gold-mid);
+        }
+
+        .ai-toggle-btn i {
+            font-size: 13px;
+        }
+
+        .ai-panel {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .ai-panel.open {
+            display: block;
+        }
+
+        .ai-upload-area {
+            border: 1.5px dashed var(--beige-mid);
+            background: var(--white);
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color .2s;
+            margin-bottom: 12px;
+        }
+
+        .ai-upload-area:hover {
+            border-color: var(--gold-mid);
+        }
+
+        .ai-upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .ai-upload-placeholder i {
+            font-size: 28px;
+            color: var(--gold-pale);
+        }
+
+        .ai-upload-placeholder span {
+            font-family: var(--font-body);
+            font-size: 12px;
+            color: var(--ink-mid);
+        }
+
+        .ai-upload-placeholder small {
+            font-size: 10px;
+            color: var(--ink-faint);
+        }
+
+        #aiPreviewImg {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .ai-generate-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--gold-deep);
+            color: var(--white);
+            border: none;
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .ai-generate-btn:disabled {
+            background: var(--beige-dark);
+            cursor: not-allowed;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .ai-generate-btn:not(:disabled):hover {
+            background: var(--gold-mid);
+        }
+
+        .ai-status {
+            font-family: var(--font-body);
+            font-size: 11px;
+            color: var(--gold-deep);
+            text-align: center;
+            min-height: 20px;
+            margin-top: 8px;
+            letter-spacing: .04em;
+        }
+
+        .ai-result-wrap {
+            margin-top: 14px;
+        }
+
+        .ai-result-label {
+            font-family: var(--font-body);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            margin-bottom: 6px;
+        }
+
+        #aiResultImg {
+            width: 100%;
+            display: block;
+            border: 1px solid var(--beige-mid);
+        }
+
+        .ai-disclaimer {
+            display: block;
+            font-size: 10px;
+            color: var(--ink-faint);
+            margin-top: 5px;
+            font-family: var(--font-body);
+        }
+
+        .pmodal-info-panel {
+            padding: 40px 36px;
+            background: var(--beige-pale);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pmodal-cat {
+            font-family: var(--font-body);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            margin-bottom: 8px;
+        }
+
+        .pmodal-name {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+            font-weight: 400;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .pmodal-divider {
+            width: 40px;
+            height: 1.5px;
+            background: linear-gradient(90deg, var(--gold-deep), var(--gold-light));
+            margin: 16px 0;
+        }
+
+        .pmodal-specs {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .pmodal-specs tr {
+            border-bottom: 1px solid var(--beige-mid);
+        }
+
+        .pmodal-specs tr:last-child {
+            border-bottom: none;
+        }
+
+        .pmodal-specs td {
+            padding: 10px 0;
+            font-family: var(--font-body);
+            font-size: 13px;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .pmodal-specs td:first-child {
+            font-weight: 500;
+            color: var(--ink-muted);
+            width: 42%;
+            letter-spacing: .04em;
+            padding-right: 12px;
+        }
+
+        .pmodal-specs td:last-child {
+            color: var(--ink);
+            font-weight: 300;
+        }
+
+        .pmodal-desc {
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--ink-muted);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .pmodal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--beige-mid);
+            flex-wrap: wrap;
+        }
+
+        .pmodal-enquire {
+            flex: 1;
+            min-width: 140px;
+            background: var(--gold-deep);
+            color: var(--white);
+            border: none;
+            padding: 14px 20px;
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .pmodal-enquire:hover {
+            background: var(--gold-mid);
+        }
+
+        .pmodal-whatsapp {
+            flex: 1;
+            min-width: 140px;
+            background: transparent;
+            color: var(--gold-deep);
+            border: 1px solid var(--gold-mid);
+            padding: 14px 20px;
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s, color .25s;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .pmodal-whatsapp:hover {
+            background: var(--gold-deep);
+            color: var(--white);
+        }
+
+        /* ── Arrows: inside backdrop, fixed to viewport ── */
+        .pmodal-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(28, 24, 20, .72);
+            border: 1px solid rgba(184, 148, 63, .4);
+            color: var(--white);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 2010;
+            transition: background .2s;
+        }
+
+        .pmodal-nav:hover {
+            background: rgba(154, 123, 63, .7);
+        }
+
+        .pmodal-prev {
+            left: 16px;
+        }
+
+        .pmodal-next {
+            right: 16px;
+        }
+
+        /* ── Close: fixed top-right, always visible ── */
+        .pmodal-close {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: rgba(28, 24, 20, .75);
+            border: 1px solid rgba(184, 148, 63, .3);
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--white);
+            z-index: 2010;
+            transition: background .2s, color .2s;
+            line-height: 1;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+        }
+
+        .pmodal-close:hover {
+            background: var(--gold-deep);
+            color: var(--white);
+        }
+
+        .load-more-wrap {
+            text-align: center;
+            padding: 24px 0 40px;
+            border-top: 1px solid var(--beige-mid);
+            margin-top: 40px;
+        }
+
+        .load-more-btn {
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            background: none;
+            border: 1px solid var(--gold-mid);
+            padding: 14px 44px;
+            transition: background .25s, color .25s;
+            cursor: pointer;
+        }
+
+        .load-more-btn:hover {
+            background: var(--gold-deep);
+            color: var(--white);
+        }
+
+        @media(max-width:900px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pmodal {
+                grid-template-columns: 1fr;
+            }
+
+            .pmodal-img-panel {
+                min-height: 260px;
+                padding: 24px;
+                position: relative;
+            }
+
+            .pmodal-info-panel {
+                padding: 24px;
+            }
+
+            .pmodal-prev {
+                left: 4px;
+            }
+
+            .pmodal-next {
+                right: 4px;
+            }
+        }
+
+        @media(max-width:480px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pmodal-name {
+                font-size: 1.3rem;
+            }
+        }
+    
+        /* Style switcher (Modern / Classical toggle) */
+        .style-switcher-wrap {
+            display: flex;
+            gap: 0;
+            margin-top: 20px;
+            margin-bottom: -1px;
+        }
+        .style-sw {
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            padding: 10px 28px;
+            border: 1px solid var(--beige-mid);
+            color: var(--ink-muted);
+            text-decoration: none;
+            transition: background .2s, color .2s, border-color .2s;
+            background: var(--white);
+        }
+        .style-sw + .style-sw { border-left: none; }
+        .style-sw.active, .style-sw:hover {
+            background: var(--gold-deep);
+            color: var(--white);
+            border-color: var(--gold-deep);
+        }
+
+    </style>
+</head>
+
+<body class="page-products">
+
+    <!-- HEADER -->
+    <header class="site-header scrolled" id="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="site-logo">
+                    <a href="index.html"><span class="site-title">MetalX</span><span class="site-tagline">Architectural
+                            Metal Works</span></a>
+                </div>
+                <nav class="primary-nav">
+                    <div class="nav-item"><a href="index.html" class="nav-link">Home</a></div>
+                    <div class="nav-item"><a href="about-us.html" class="nav-link">About Us</a></div>
+                    <div class="nav-item"><a href="company.html" class="nav-link">Company</a></div>
+                    <div class="nav-item has-dropdown">
+                        <a href="products.html" class="nav-link active">Products</a>
+                        <div class="nav-dropdown" role="region" aria-label="Products menu">
+                            <div class="dropdown-items">
+                                <a href="railings-modern.html" class="dropdown-item">Railings</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-item"><a href="contact-us.html" class="nav-link">Contact Us</a></div>
+                </nav>
+                <button class="hamburger-btn" aria-label="Open menu">
+                    <span class="hamburger-line"></span><span class="hamburger-line"></span><span
+                        class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu-overlay" role="dialog" aria-modal="true">
+        <div class="mobile-menu-header"><span class="site-title">MetalX</span><button class="mobile-close">Close
+                ✕</button></div>
+        <ul>
+            <li class="mobile-nav-item"><a href="index.html" class="mobile-nav-link">Home</a></li>
+            <li class="mobile-nav-item"><a href="about-us.html" class="mobile-nav-link">About Us</a></li>
+            <li class="mobile-nav-item"><a href="company.html" class="mobile-nav-link">Company</a></li>
+            <li class="mobile-nav-item">
+                <div class="mobile-nav-link mobile-nav-toggle">Products <span class="toggle-icon">+</span></div>
+                <div class="mobile-sub-menu">
+                    <a href="railings-modern.html" class="mobile-sub-link">Railings</a>
+                </div>
+            </li>
+            <li class="mobile-nav-item"><a href="contact-us.html" class="mobile-nav-link">Contact Us</a></li>
+        </ul>
+    </div>
+
+    <!-- MAIN -->
+    <main class="products-page-wrap">
+        <div class="products-page-header">
+            <div class="container">
+                <h1>Modern Facade Systems</h1>
+            <div class="style-switcher-wrap">
+                    <a href="facade-modern.html" class="style-sw active">Modern</a>
+                    <a href="facade-classical.html" class="style-sw">Classical</a>
+                </div>
+            </div>
+            <div class="container">
+                <div class="filter-tabs" role="tablist" id="filterTabs">
+                    <button class="filter-tab active" data-filter="partitions">All Modern Facades</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="products-grid-wrap">
+            <div class="container">
+                <div class="products-grid" id="productsGrid">
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/square-baluster.png"
+                        data-thumbs="images/products/balusters/square-baluster.png|images/products/balusters/square-baluster.png|images/products/balusters/square-baluster.png"
+                        data-name="Square Baluster" data-cat-label="Balusters"
+                        data-desc="Square hollow section, clean 90° profile ideal for modern railings and balustrades."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304 / SS 316</td></tr><tr><td>Profile</td><td>Square hollow section</td></tr><tr><td>Standard Size</td><td>25×25mm, 32×32mm, 40×40mm</td></tr><tr><td>Height</td><td>900mm – 1200mm (custom)</td></tr><tr><td>Finish</td><td>Powder coat / Mill finish / Galvanised</td></tr><tr><td>Application</td><td>Stairs, balconies, fencing</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/square-baluster.png" alt="Square Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Square Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/round-baluster.png"
+                        data-thumbs="images/products/balusters/round-baluster.png|images/products/balusters/round-baluster.png|images/products/balusters/round-baluster.png"
+                        data-name="Round Baluster" data-cat-label="Balusters"
+                        data-desc="Classic round bar profile. Timeless, structural, and available in multiple diameters."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Solid round / hollow pipe</td></tr><tr><td>Standard Size</td><td>16mm, 20mm, 25mm dia</td></tr><tr><td>Height</td><td>900mm – 1200mm (custom)</td></tr><tr><td>Finish</td><td>Powder coat / Polished / Galvanised</td></tr><tr><td>Application</td><td>Staircases, garden fencing</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/round-baluster.png" alt="Round Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Round Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/twist-baluster.png"
+                        data-thumbs="images/products/balusters/twist-baluster.png|images/products/balusters/twist-baluster.png|images/products/balusters/twist-baluster.png"
+                        data-name="Twist Baluster" data-cat-label="Balusters"
+                        data-desc="Hand-forged single twist pattern. A classic of wrought-iron craftsmanship — timeless in heritage and contemporary settings."
+                        data-specs="<tr><td>Material</td><td>Mild Steel (wrought iron finish)</td></tr><tr><td>Profile</td><td>Square twisted bar</td></tr><tr><td>Standard Size</td><td>12mm, 16mm sq. base</td></tr><tr><td>Height</td><td>900mm – 1100mm</td></tr><tr><td>Finish</td><td>Black powder coat / Antique</td></tr><tr><td>Application</td><td>Heritage stairs, classical railings</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/twist-baluster.png" alt="Twist Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Twist Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/knuckle-baluster.png"
+                        data-thumbs="images/products/balusters/knuckle-baluster.png|images/products/balusters/knuckle-baluster.png|images/products/balusters/knuckle-baluster.png"
+                        data-name="Knuckle Baluster" data-cat-label="Balusters"
+                        data-desc="Decorative knuckle joint midpoint adds structural character. Popular for traditional and transitional interiors."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Profile</td><td>Round / square with cast knuckle</td></tr><tr><td>Standard Size</td><td>16mm, 20mm base</td></tr><tr><td>Height</td><td>900mm – 1050mm</td></tr><tr><td>Finish</td><td>Black powder coat / Bronze</td></tr><tr><td>Application</td><td>Balconies, staircases, gates</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/knuckle-baluster.png" alt="Knuckle Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Knuckle Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/fluted-baluster.png"
+                        data-thumbs="images/products/balusters/fluted-baluster.png|images/products/balusters/fluted-baluster.png|images/products/balusters/fluted-baluster.png"
+                        data-name="Fluted Baluster" data-cat-label="Balusters"
+                        data-desc="Vertical fluting adds a classical column feel. Bridges modern minimalism with heritage detail."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Fluted round / square</td></tr><tr><td>Standard Size</td><td>25mm, 32mm base dia</td></tr><tr><td>Height</td><td>900mm – 1200mm</td></tr><tr><td>Finish</td><td>Powder coat / Brushed SS</td></tr><tr><td>Application</td><td>Luxury interiors, premium staircases</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/fluted-baluster.png" alt="Fluted Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Fluted Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/basket-baluster.png"
+                        data-thumbs="images/products/balusters/basket-baluster.png|images/products/balusters/basket-baluster.png|images/products/balusters/basket-baluster.png"
+                        data-name="Basket Baluster" data-cat-label="Balusters"
+                        data-desc="Intricate basket-weave centre — a hallmark of Victorian ironwork. Crafted individually for heritage projects."
+                        data-specs="<tr><td>Material</td><td>Mild Steel (hand-forged)</td></tr><tr><td>Profile</td><td>Basket weave centre, round ends</td></tr><tr><td>Standard Size</td><td>16mm base, 900mm ht</td></tr><tr><td>Height</td><td>800mm – 1050mm</td></tr><tr><td>Finish</td><td>Black powder coat / Antique bronze</td></tr><tr><td>Application</td><td>Heritage, conservation, Victorian</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/basket-baluster.png" alt="Basket Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Basket Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/spear-tip-baluster.png"
+                        data-thumbs="images/products/balusters/spear-tip-baluster.png|images/products/balusters/spear-tip-baluster.png|images/products/balusters/spear-tip-baluster.png"
+                        data-name="Spear-tip Baluster" data-cat-label="Balusters"
+                        data-desc="Classic spear top with clean shaft. Used extensively in boundary fencing, garden railings, and perimeter gates."
+                        data-specs="<tr><td>Material</td><td>MS / Cast Iron</td></tr><tr><td>Profile</td><td>Flat / round bar with forged spear tip</td></tr><tr><td>Standard Size</td><td>12mm – 20mm, 900–1200mm ht</td></tr><tr><td>Height</td><td>900mm – 1500mm</td></tr><tr><td>Finish</td><td>Black / Galvanised / Powder coat</td></tr><tr><td>Application</td><td>Gates, fencing, boundary walls</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/spear-tip-baluster.png" alt="Spear-tip Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Spear-tip Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/hollow-square-baluster.png"
+                        data-thumbs="images/products/balusters/hollow-square-baluster.png|images/products/balusters/hollow-square-baluster.png|images/products/balusters/hollow-square-baluster.png"
+                        data-name="Hollow Square Baluster" data-cat-label="Balusters"
+                        data-desc="Structural hollow square section, lightweight yet rigid. Clean profile for minimal modern railings."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Hollow square tube</td></tr><tr><td>Standard Size</td><td>20×20, 25×25, 32×32mm</td></tr><tr><td>Height</td><td>900mm – 1200mm (custom)</td></tr><tr><td>Finish</td><td>Powder coat / Brushed SS</td></tr><tr><td>Application</td><td>Commercial, residential, contemporary</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/hollow-square-baluster.png" alt="Hollow Square Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Hollow Square Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/scroll-baluster.png"
+                        data-thumbs="images/products/balusters/scroll-baluster.png|images/products/balusters/scroll-baluster.png|images/products/balusters/scroll-baluster.png"
+                        data-name="Scroll Baluster" data-cat-label="Balusters"
+                        data-desc="Scroll ends add classical elegance without heavy ornamentation. Versatile — suits both traditional and transitional styles."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Profile</td><td>Flat bar with rolled scroll ends</td></tr><tr><td>Standard Size</td><td>12mm flat, 900mm ht</td></tr><tr><td>Height</td><td>800mm – 1050mm</td></tr><tr><td>Finish</td><td>Black / Bronze powder coat</td></tr><tr><td>Application</td><td>Balconies, interior stairs, heritage</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/scroll-baluster.png" alt="Scroll Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Scroll Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/ornate-baluster.png"
+                        data-thumbs="images/products/balusters/ornate-baluster.png|images/products/balusters/ornate-baluster.png|images/products/balusters/ornate-baluster.png"
+                        data-name="Ornate Baluster" data-cat-label="Balusters"
+                        data-desc="Highly detailed ornamental design with decorative mouldings. Suited for grand staircases and luxury interiors."
+                        data-specs="<tr><td>Material</td><td>Mild Steel / Cast iron</td></tr><tr><td>Profile</td><td>Multi-element ornate forged body</td></tr><tr><td>Standard Size</td><td>Custom — approx 900–1050mm</td></tr><tr><td>Height</td><td>800mm – 1200mm (custom)</td></tr><tr><td>Finish</td><td>Black / Gold / Antique bronze</td></tr><tr><td>Application</td><td>Grand entrances, luxury residences</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/ornate-baluster.png" alt="Ornate Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Ornate Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/flat-bar-baluster.png"
+                        data-thumbs="images/products/balusters/flat-bar-baluster.png|images/products/balusters/flat-bar-baluster.png|images/products/balusters/flat-bar-baluster.png"
+                        data-name="Flat Bar Baluster" data-cat-label="Balusters"
+                        data-desc="Minimal flat bar profile — bold graphic quality with industrial character. Cost-effective and contemporary."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Flat rectangular bar</td></tr><tr><td>Standard Size</td><td>20×5mm, 25×6mm, 32×6mm</td></tr><tr><td>Height</td><td>900mm – 1200mm</td></tr><tr><td>Finish</td><td>Powder coat / Polished</td></tr><tr><td>Application</td><td>Modern railings, commercial spaces</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/flat-bar-baluster.png" alt="Flat Bar Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Flat Bar Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/grooved-round-baluster.png"
+                        data-thumbs="images/products/balusters/grooved-round-baluster.png|images/products/balusters/grooved-round-baluster.png|images/products/balusters/grooved-round-baluster.png"
+                        data-name="Grooved Round Baluster" data-cat-label="Balusters"
+                        data-desc="Round bar with machined grooves at intervals — adds texture and visual rhythm to otherwise plain profiles."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Grooved solid round bar</td></tr><tr><td>Standard Size</td><td>20mm, 25mm dia</td></tr><tr><td>Height</td><td>900mm – 1100mm</td></tr><tr><td>Finish</td><td>Brushed / Powder coat</td></tr><tr><td>Application</td><td>Contemporary staircases, feature railings</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/grooved-round-baluster.png" alt="Grooved Round Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Grooved Round Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/diamond-pattern-baluster.png"
+                        data-thumbs="images/products/balusters/diamond-pattern-baluster.png|images/products/balusters/diamond-pattern-baluster.png|images/products/balusters/diamond-pattern-baluster.png"
+                        data-name="Diamond Pattern Baluster" data-cat-label="Balusters"
+                        data-desc="Cut diamond pattern adds decorative texture without heavy ornamentation. Versatile for modern-traditional blend."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Profile</td><td>Square bar with diamond pattern</td></tr><tr><td>Standard Size</td><td>16mm sq, 900mm ht</td></tr><tr><td>Height</td><td>800mm – 1050mm</td></tr><tr><td>Finish</td><td>Black / Antique bronze</td></tr><tr><td>Application</td><td>Classical interiors, residential</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/diamond-pattern-baluster.png"
+                                alt="Diamond Pattern Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Diamond Pattern Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/ribbed-baluster.png"
+                        data-thumbs="images/products/balusters/ribbed-baluster.png|images/products/balusters/ribbed-baluster.png|images/products/balusters/ribbed-baluster.png"
+                        data-name="Ribbed Baluster" data-cat-label="Balusters"
+                        data-desc="Horizontal rib detailing along the shaft — tactile texture with a refined finish."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Round/square ribbed bar</td></tr><tr><td>Standard Size</td><td>20mm, 25mm base</td></tr><tr><td>Height</td><td>900mm – 1100mm</td></tr><tr><td>Finish</td><td>Powder coat / Polished SS</td></tr><tr><td>Application</td><td>Contemporary staircases, balconies</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/ribbed-baluster.png" alt="Ribbed Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Ribbed Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/tapered-baluster.png"
+                        data-thumbs="images/products/balusters/tapered-baluster.png|images/products/balusters/tapered-baluster.png|images/products/balusters/tapered-baluster.png"
+                        data-name="Tapered Baluster" data-cat-label="Balusters"
+                        data-desc="Gracefully tapered silhouette — wide at base, slender at top. Adds elegant verticality to luxury spaces."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Profile</td><td>Tapered round/square</td></tr><tr><td>Standard Size</td><td>Custom — 25mm base to 16mm top</td></tr><tr><td>Height</td><td>900mm – 1200mm</td></tr><tr><td>Finish</td><td>Brushed SS / Powder coat</td></tr><tr><td>Application</td><td>Premium residences, hotel lobbies</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/tapered-baluster.png" alt="Tapered Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Tapered Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/double-twist-baluster.png"
+                        data-thumbs="images/products/balusters/double-twist-baluster.png|images/products/balusters/double-twist-baluster.png|images/products/balusters/double-twist-baluster.png"
+                        style="display:none" data-name="Double Twist Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/double-twist-baluster.png" alt="Double Twist Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Double Twist Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/vine-scroll-baluster.png"
+                        data-thumbs="images/products/balusters/vine-scroll-baluster.png|images/products/balusters/vine-scroll-baluster.png|images/products/balusters/vine-scroll-baluster.png"
+                        style="display:none" data-name="Vine Scroll Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/vine-scroll-baluster.png" alt="Vine Scroll Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Vine Scroll Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/classic-pillar-baluster.png"
+                        data-thumbs="images/products/balusters/classic-pillar-baluster.png|images/products/balusters/classic-pillar-baluster.png|images/products/balusters/classic-pillar-baluster.png"
+                        style="display:none" data-name="Classic Pillar Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/classic-pillar-baluster.png"
+                                alt="Classic Pillar Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Classic Pillar Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/square-twist-baluster.png"
+                        data-thumbs="images/products/balusters/square-twist-baluster.png|images/products/balusters/square-twist-baluster.png|images/products/balusters/square-twist-baluster.png"
+                        style="display:none" data-name="Square Twist Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/square-twist-baluster.png" alt="Square Twist Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Square Twist Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/cage-baluster.png"
+                        data-thumbs="images/products/balusters/cage-baluster.png|images/products/balusters/cage-baluster.png|images/products/balusters/cage-baluster.png"
+                        style="display:none" data-name="Cage Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/cage-baluster.png" alt="Cage Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Cage Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/arrow-baluster.png"
+                        data-thumbs="images/products/balusters/arrow-baluster.png|images/products/balusters/arrow-baluster.png|images/products/balusters/arrow-baluster.png"
+                        style="display:none" data-name="Arrow Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/arrow-baluster.png" alt="Arrow Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Arrow Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/hammered-baluster.png"
+                        data-thumbs="images/products/balusters/hammered-baluster.png|images/products/balusters/hammered-baluster.png|images/products/balusters/hammered-baluster.png"
+                        style="display:none" data-name="Hammered Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/hammered-baluster.png" alt="Hammered Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Hammered Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/colonial-baluster.png"
+                        data-thumbs="images/products/balusters/colonial-baluster.png|images/products/balusters/colonial-baluster.png|images/products/balusters/colonial-baluster.png"
+                        style="display:none" data-name="Colonial Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/colonial-baluster.png" alt="Colonial Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Colonial Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/wave-baluster.png"
+                        data-thumbs="images/products/balusters/wave-baluster.png|images/products/balusters/wave-baluster.png|images/products/balusters/wave-baluster.png"
+                        style="display:none" data-name="Wave Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/wave-baluster.png" alt="Wave Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Wave Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/lotus-baluster.png"
+                        data-thumbs="images/products/balusters/lotus-baluster.png|images/products/balusters/lotus-baluster.png|images/products/balusters/lotus-baluster.png"
+                        style="display:none" data-name="Lotus Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/lotus-baluster.png" alt="Lotus Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Lotus Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/finial-baluster.png"
+                        data-thumbs="images/products/balusters/finial-baluster.png|images/products/balusters/finial-baluster.png|images/products/balusters/finial-baluster.png"
+                        style="display:none" data-name="Finial Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/finial-baluster.png" alt="Finial Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Finial Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/stepped-baluster.png"
+                        data-thumbs="images/products/balusters/stepped-baluster.png|images/products/balusters/stepped-baluster.png|images/products/balusters/stepped-baluster.png"
+                        style="display:none" data-name="Stepped Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/stepped-baluster.png" alt="Stepped Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Stepped Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/barrel-baluster.png"
+                        data-thumbs="images/products/balusters/barrel-baluster.png|images/products/balusters/barrel-baluster.png|images/products/balusters/barrel-baluster.png"
+                        style="display:none" data-name="Barrel Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/barrel-baluster.png" alt="Barrel Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Barrel Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/leaf-scroll-baluster.png"
+                        data-thumbs="images/products/balusters/leaf-scroll-baluster.png|images/products/balusters/leaf-scroll-baluster.png|images/products/balusters/leaf-scroll-baluster.png"
+                        style="display:none" data-name="Leaf Scroll Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/leaf-scroll-baluster.png" alt="Leaf Scroll Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Leaf Scroll Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/gothic-baluster.png"
+                        data-thumbs="images/products/balusters/gothic-baluster.png|images/products/balusters/gothic-baluster.png|images/products/balusters/gothic-baluster.png"
+                        style="display:none" data-name="Gothic Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/gothic-baluster.png" alt="Gothic Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Gothic Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/hex-baluster.png"
+                        data-thumbs="images/products/balusters/hex-baluster.png|images/products/balusters/hex-baluster.png|images/products/balusters/hex-baluster.png"
+                        style="display:none" data-name="Hex Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/hex-baluster.png" alt="Hex Baluster" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Hex Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/bold-fluted-baluster.png"
+                        data-thumbs="images/products/balusters/bold-fluted-baluster.png|images/products/balusters/bold-fluted-baluster.png|images/products/balusters/bold-fluted-baluster.png"
+                        style="display:none" data-name="Bold Fluted Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/bold-fluted-baluster.png" alt="Bold Fluted Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Bold Fluted Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters" data-img="images/products/balusters/art-deco-baluster.png"
+                        data-thumbs="images/products/balusters/art-deco-baluster.png|images/products/balusters/art-deco-baluster.png|images/products/balusters/art-deco-baluster.png"
+                        style="display:none" data-name="Art Deco Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/art-deco-baluster.png" alt="Art Deco Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Art Deco Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="balusters"
+                        data-img="images/products/balusters/wrought-iron-baluster.png"
+                        data-thumbs="images/products/balusters/wrought-iron-baluster.png|images/products/balusters/wrought-iron-baluster.png|images/products/balusters/wrought-iron-baluster.png"
+                        style="display:none" data-name="Wrought Iron Baluster" data-cat-label="Balusters">
+                        <div class="px-card-img">
+                            <img src="images/products/balusters/wrought-iron-baluster.png" alt="Wrought Iron Baluster"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Balusters</span>
+                            <div class="px-card-name">Wrought Iron Baluster</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05776_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05776_sq.JPG|images/products/partitions/DSC05776_sq.JPG|images/products/partitions/DSC05776_sq.JPG"
+                        data-name="Geometric Partition Screen" data-cat-label="Partitions"
+                        data-desc="Precision-cut geometric pattern screen for room division, cladding, or decorative installation."
+                        data-specs="<tr><td>Material</td><td>Mild Steel / SS 304</td></tr><tr><td>Thickness</td><td>2mm – 4mm</td></tr><tr><td>Max Panel Size</td><td>1200×2400mm (custom)</td></tr><tr><td>Pattern</td><td>Geometric repeat</td></tr><tr><td>Finish</td><td>Powder coat / Antique / Natural</td></tr><tr><td>Application</td><td>Room dividers, lobbies, facades</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05776_sq.JPG" alt="Geometric Partition Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Geometric Partition Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05778_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05778_sq.JPG|images/products/partitions/DSC05778_sq.JPG|images/products/partitions/DSC05778_sq.JPG"
+                        data-name="Floral Jali Panel" data-cat-label="Partitions"
+                        data-desc="Intricate floral jali pattern — a traditional Indian design element executed in precision-cut metal."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Pattern</td><td>Floral jali</td></tr><tr><td>Finish</td><td>Powder coat / Antique gold</td></tr><tr><td>Application</td><td>Interiors, screens, room dividers</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05778_sq.JPG" alt="Floral Jali Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Floral Jali Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05780_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05780_sq.JPG|images/products/partitions/DSC05780_sq.JPG|images/products/partitions/DSC05780_sq.JPG"
+                        data-name="Linear Strip Partition" data-cat-label="Partitions"
+                        data-desc="Clean parallel strip design for modern interior screens and architectural facades."
+                        data-specs="<tr><td>Material</td><td>MS / Aluminium</td></tr><tr><td>Thickness</td><td>3mm strips</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Pattern</td><td>Linear vertical / horizontal</td></tr><tr><td>Finish</td><td>Powder coat / Anodised</td></tr><tr><td>Application</td><td>Office screens, facades, partitions</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05780_sq.JPG" alt="Linear Strip Partition"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Linear Strip Partition</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05784_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05784_sq.JPG|images/products/partitions/DSC05784_sq.JPG|images/products/partitions/DSC05784_sq.JPG"
+                        data-name="Lattice Partition Panel" data-cat-label="Partitions"
+                        data-desc="Classic lattice / diamond grid pattern. Allows light and air through while defining space."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Max Panel Size</td><td>1200×2400mm</td></tr><tr><td>Pattern</td><td>Diamond lattice grid</td></tr><tr><td>Finish</td><td>Powder coat / Black matte</td></tr><tr><td>Application</td><td>Gardens, indoor screens, gates</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05784_sq.JPG" alt="Lattice Partition Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Lattice Partition Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05795_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05795_sq.JPG|images/products/partitions/DSC05795_sq.JPG|images/products/partitions/DSC05795_sq.JPG"
+                        data-name="Perforated Screen Panel" data-cat-label="Partitions"
+                        data-desc="Round-perforated panels for light diffusion, privacy screening, and architectural cladding."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304 / Aluminium</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Perforation</td><td>6mm, 8mm, 10mm dia holes</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Mill finish</td></tr><tr><td>Application</td><td>Facades, privacy screens, sunshading</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05795_sq.JPG" alt="Perforated Screen Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Perforated Screen Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05797_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05797_sq.JPG|images/products/partitions/DSC05797_sq.JPG|images/products/partitions/DSC05797_sq.JPG"
+                        data-name="Ornamental Divider" data-cat-label="Partitions"
+                        data-desc="Decorative ornamental screen combining geometric and organic motifs."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm – 4mm</td></tr><tr><td>Pattern</td><td>Mixed ornamental</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Antique</td></tr><tr><td>Application</td><td>Luxury interiors, heritage spaces</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05797_sq.JPG" alt="Ornamental Divider"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Ornamental Divider</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05798_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05798_sq.JPG|images/products/partitions/DSC05798_sq.JPG|images/products/partitions/DSC05798_sq.JPG"
+                        data-name="Arch Panel Partition" data-cat-label="Partitions"
+                        data-desc="Arched top panel with decorative infill — combines structure with classical elegance."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>3mm</td></tr><tr><td>Panel Size</td><td>800W × 2100H (custom)</td></tr><tr><td>Pattern</td><td>Arch top with infill</td></tr><tr><td>Finish</td><td>Black / Antique bronze</td></tr><tr><td>Application</td><td>Entrances, room dividers, feature walls</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05798_sq.JPG" alt="Arch Panel Partition"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Arch Panel Partition</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05806_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05806_sq.JPG|images/products/partitions/DSC05806_sq.JPG|images/products/partitions/DSC05806_sq.JPG"
+                        data-name="Chevron Screen" data-cat-label="Partitions"
+                        data-desc="Bold chevron / herringbone pattern screen with strong graphic quality."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Pattern</td><td>Chevron / herringbone</td></tr><tr><td>Finish</td><td>Powder coat / Brushed SS</td></tr><tr><td>Application</td><td>Modern interiors, facades, partitions</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05806_sq.JPG" alt="Chevron Screen" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Chevron Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05810_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05810_sq.JPG|images/products/partitions/DSC05810_sq.JPG|images/products/partitions/DSC05810_sq.JPG"
+                        data-name="Diamond Mesh Panel" data-cat-label="Partitions"
+                        data-desc="Expanded diamond mesh pattern — lightweight and structural with excellent light transmission."
+                        data-specs="<tr><td>Material</td><td>MS / Aluminium</td></tr><tr><td>Thickness</td><td>2mm base material</td></tr><tr><td>Mesh Opening</td><td>25×50mm diamond</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Mill</td></tr><tr><td>Application</td><td>Screens, cladding, security grilles</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05810_sq.JPG" alt="Diamond Mesh Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Diamond Mesh Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05818_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05818_sq.JPG|images/products/partitions/DSC05818_sq.JPG|images/products/partitions/DSC05818_sq.JPG"
+                        data-name="Lotus Pattern Screen" data-cat-label="Partitions"
+                        data-desc="Lotus motif — a classic of Indian architectural ornamentation, laser-cut with precision."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>3mm</td></tr><tr><td>Pattern</td><td>Lotus repeat</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Gold / Antique / Black powder coat</td></tr><tr><td>Application</td><td>Luxury interiors, pooja rooms, feature walls</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05818_sq.JPG" alt="Lotus Pattern Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Lotus Pattern Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05824_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05824_sq.JPG|images/products/partitions/DSC05824_sq.JPG|images/products/partitions/DSC05824_sq.JPG"
+                        data-name="Classic Jali Divider" data-cat-label="Partitions"
+                        data-desc="Traditional jali screen with classic repeat pattern — timeless in South Asian architectural contexts."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Classic jali repeat</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Raw steel</td></tr><tr><td>Application</td><td>Interiors, courtyards, screens</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05824_sq.JPG" alt="Classic Jali Divider"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Classic Jali Divider</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05841_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05841_sq.JPG|images/products/partitions/DSC05841_sq.JPG|images/products/partitions/DSC05841_sq.JPG"
+                        data-name="Scroll Border Panel" data-cat-label="Partitions"
+                        data-desc="Scroll border frame with open centre — used as decorative wall panel or gate infill."
+                        data-specs="<tr><td>Material</td><td>Mild Steel (hand-finished)</td></tr><tr><td>Thickness</td><td>3mm – 4mm</td></tr><tr><td>Panel Size</td><td>600–1200W custom</td></tr><tr><td>Pattern</td><td>Scroll border</td></tr><tr><td>Finish</td><td>Black / Antique bronze</td></tr><tr><td>Application</td><td>Gates, wall panels, feature pieces</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05841_sq.JPG" alt="Scroll Border Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Scroll Border Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05850_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05850_sq.JPG|images/products/partitions/DSC05850_sq.JPG|images/products/partitions/DSC05850_sq.JPG"
+                        data-name="Honeycomb Screen" data-cat-label="Partitions"
+                        data-desc="Hexagonal honeycomb pattern — structurally efficient and visually striking."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304 / Aluminium</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Cell Size</td><td>30mm, 50mm hex</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Anodised</td></tr><tr><td>Application</td><td>Modern facades, privacy screens, cladding</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05850_sq.JPG" alt="Honeycomb Screen" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Honeycomb Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05852_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05852_sq.JPG|images/products/partitions/DSC05852_sq.JPG|images/products/partitions/DSC05852_sq.JPG"
+                        data-name="Woven Pattern Panel" data-cat-label="Partitions"
+                        data-desc="Simulated woven texture in metal — warm and organic aesthetic for premium interiors."
+                        data-specs="<tr><td>Material</td><td>Mild Steel / Corten</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Woven basket weave</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Corten / Antique</td></tr><tr><td>Application</td><td>Feature walls, screens, cladding</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05852_sq.JPG" alt="Woven Pattern Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Woven Pattern Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05864_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05864_sq.JPG|images/products/partitions/DSC05864_sq.JPG|images/products/partitions/DSC05864_sq.JPG"
+                        data-name="Moroccan Jali Screen" data-cat-label="Partitions"
+                        data-desc="Moroccan-inspired geometric star and polygon pattern — dramatic light and shadow effects."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm – 3mm</td></tr><tr><td>Pattern</td><td>Moroccan star / polygon</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Black / Gold / Antique</td></tr><tr><td>Application</td><td>Luxury interiors, restaurants, hotels</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05864_sq.JPG" alt="Moroccan Jali Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Moroccan Jali Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05871_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05871_sq.JPG|images/products/partitions/DSC05871_sq.JPG|images/products/partitions/DSC05871_sq.JPG"
+                        data-name="Temple Pattern Divider" data-cat-label="Partitions"
+                        data-desc="Classic temple arch and spire motif — rooted in Indian temple architecture."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>3mm</td></tr><tr><td>Pattern</td><td>Temple arch motif</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Antique gold</td></tr><tr><td>Application</td><td>Pooja rooms, heritage interiors, lobbies</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05871_sq.JPG" alt="Temple Pattern Divider"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Temple Pattern Divider</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05872_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05872_sq.JPG|images/products/partitions/DSC05872_sq.JPG|images/products/partitions/DSC05872_sq.JPG"
+                        data-name="Leaf Cluster Panel" data-cat-label="Partitions"
+                        data-desc="Organic leaf cluster design — brings natural motif into precision metalwork."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm</td></tr><tr><td>Pattern</td><td>Leaf cluster organic</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Antique / Natural rust / Powder coat</td></tr><tr><td>Application</td><td>Feature walls, garden screens, interiors</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05872_sq.JPG" alt="Leaf Cluster Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Leaf Cluster Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05875_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05875_sq.JPG|images/products/partitions/DSC05875_sq.JPG|images/products/partitions/DSC05875_sq.JPG"
+                        data-name="Star Lattice Screen" data-cat-label="Partitions"
+                        data-desc="Eight-pointed star lattice — timeless Islamic geometric pattern with premium execution."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>8-pointed star lattice</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Black / Gold / Antique</td></tr><tr><td>Application</td><td>Luxury hotels, restaurants, interiors</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05875_sq.JPG" alt="Star Lattice Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Star Lattice Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05876_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05876_sq.JPG|images/products/partitions/DSC05876_sq.JPG|images/products/partitions/DSC05876_sq.JPG"
+                        data-name="Arabesque Panel" data-cat-label="Partitions"
+                        data-desc="Classical arabesque flowing pattern — intricate interweaving curves derived from Islamic art."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm – 3mm</td></tr><tr><td>Pattern</td><td>Arabesque flowing</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Gold / Antique bronze / Black</td></tr><tr><td>Application</td><td>Premium interiors, hotels, feature walls</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05876_sq.JPG" alt="Arabesque Panel" loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Arabesque Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05901_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05901_sq.JPG|images/products/partitions/DSC05901_sq.JPG|images/products/partitions/DSC05901_sq.JPG"
+                        data-name="Wave Pattern Divider" data-cat-label="Partitions"
+                        data-desc="Fluid wave pattern for contemporary screens and room dividers with dynamic visual movement."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Wave / ripple</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Brushed SS</td></tr><tr><td>Application</td><td>Modern interiors, offices, partitions</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05901_sq.JPG" alt="Wave Pattern Divider"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Wave Pattern Divider</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05914_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05914_sq.JPG|images/products/partitions/DSC05914_sq.JPG|images/products/partitions/DSC05914_sq.JPG"
+                        data-name="Peacock Jali Screen" data-cat-label="Partitions"
+                        data-desc="Peacock feather motif — an iconic symbol of Indian craft, executed with laser precision."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm – 3mm</td></tr><tr><td>Pattern</td><td>Peacock feather jali</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Antique gold / Black / Powder coat</td></tr><tr><td>Application</td><td>Feature walls, premium interiors, hospitality</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05914_sq.JPG" alt="Peacock Jali Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Peacock Jali Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05925_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05925_sq.JPG|images/products/partitions/DSC05925_sq.JPG|images/products/partitions/DSC05925_sq.JPG"
+                        data-name="Fleur-de-Lis Panel" data-cat-label="Partitions"
+                        data-desc="French-origin fleur-de-lis repeat — classical European ornamental motif in Indian metalwork."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>3mm</td></tr><tr><td>Pattern</td><td>Fleur-de-lis repeat</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Black / Antique bronze / Gold</td></tr><tr><td>Application</td><td>Heritage, classical interiors, gates</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05925_sq.JPG" alt="Fleur-de-Lis Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Fleur-de-Lis Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05932_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05932_sq.JPG|images/products/partitions/DSC05932_sq.JPG|images/products/partitions/DSC05932_sq.JPG"
+                        data-name="Interlocking Ring Screen" data-cat-label="Partitions"
+                        data-desc="Interlocking circular rings — modern pattern with mathematical elegance."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Interlocking rings</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Polished SS</td></tr><tr><td>Application</td><td>Contemporary offices, lobbies, facades</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05932_sq.JPG" alt="Interlocking Ring Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Interlocking Ring Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05940_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05940_sq.JPG|images/products/partitions/DSC05940_sq.JPG|images/products/partitions/DSC05940_sq.JPG"
+                        data-name="Heritage Jali Panel" data-cat-label="Partitions"
+                        data-desc="Traditional heritage jali with layered geometric depth — evokes Mughal and Rajput architecture."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>3mm – 4mm</td></tr><tr><td>Pattern</td><td>Heritage multi-layer jali</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Antique / Gold / Black</td></tr><tr><td>Application</td><td>Heritage restoration, luxury hotels</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05940_sq.JPG" alt="Heritage Jali Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Heritage Jali Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05941_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05941_sq.JPG|images/products/partitions/DSC05941_sq.JPG|images/products/partitions/DSC05941_sq.JPG"
+                        data-name="Vine Trellis Screen" data-cat-label="Partitions"
+                        data-desc="Organic vine and tendril trellis pattern — ideal for garden screens and bio-inspired interiors."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm</td></tr><tr><td>Pattern</td><td>Vine trellis organic</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Natural rust / Powder coat / Antique</td></tr><tr><td>Application</td><td>Garden screens, feature walls, biophilic design</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05941_sq.JPG" alt="Vine Trellis Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Vine Trellis Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05947_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05947_sq.JPG|images/products/partitions/DSC05947_sq.JPG|images/products/partitions/DSC05947_sq.JPG"
+                        data-name="Parquet Pattern Panel" data-cat-label="Partitions"
+                        data-desc="Parquet floor-inspired geometric panel — clean interlocking rectangles with dimensional feel."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Parquet / basketweave</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Brushed SS</td></tr><tr><td>Application</td><td>Facade cladding, interior screens, partitions</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05947_sq.JPG" alt="Parquet Pattern Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Parquet Pattern Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05956_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05956_sq.JPG|images/products/partitions/DSC05956_sq.JPG|images/products/partitions/DSC05956_sq.JPG"
+                        data-name="Decorative Laser-cut Screen" data-cat-label="Partitions"
+                        data-desc="Complex decorative motif executed through precision laser cutting — maximum detail, minimum material."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304 / Aluminium</td></tr><tr><td>Thickness</td><td>1.5mm – 3mm</td></tr><tr><td>Pattern</td><td>Complex decorative</td></tr><tr><td>Max Panel Size</td><td>Custom up to 1500×3000mm</td></tr><tr><td>Finish</td><td>Any powder coat / Anodised</td></tr><tr><td>Application</td><td>High-end interiors, facade features, privacy</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05956_sq.JPG" alt="Decorative Laser-cut Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Decorative Laser-cut Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05958_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05958_sq.JPG|images/products/partitions/DSC05958_sq.JPG|images/products/partitions/DSC05958_sq.JPG"
+                        data-name="Chevron Laser Panel" data-cat-label="Partitions"
+                        data-desc="Diagonal chevron pattern laser-cut for crisp edges and bold geometric impact."
+                        data-specs="<tr><td>Material</td><td>MS / SS 304</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Chevron diagonal</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Mill finish</td></tr><tr><td>Application</td><td>Modern facades, interior screens</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05958_sq.JPG" alt="Chevron Laser Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Chevron Laser Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05961_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05961_sq.JPG|images/products/partitions/DSC05961_sq.JPG|images/products/partitions/DSC05961_sq.JPG"
+                        data-name="Geometric Star Screen" data-cat-label="Partitions"
+                        data-desc="Six-pointed star geometric repeat — precise, balanced, and architecturally versatile."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2mm – 2.5mm</td></tr><tr><td>Pattern</td><td>6-pointed star repeat</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Black / Antique / Gold</td></tr><tr><td>Application</td><td>Interiors, facades, decorative screens</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05961_sq.JPG" alt="Geometric Star Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Geometric Star Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05965_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05965_sq.JPG|images/products/partitions/DSC05965_sq.JPG|images/products/partitions/DSC05965_sq.JPG"
+                        data-name="Classic Medallion Panel" data-cat-label="Partitions"
+                        data-desc="Circular medallion motif in repeat — classical centrepiece design for panels and feature walls."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>3mm</td></tr><tr><td>Pattern</td><td>Circular medallion</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Antique gold / Black</td></tr><tr><td>Application</td><td>Luxury interiors, feature walls, gates</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05965_sq.JPG" alt="Classic Medallion Panel"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Classic Medallion Panel</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05969_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05969_sq.JPG|images/products/partitions/DSC05969_sq.JPG|images/products/partitions/DSC05969_sq.JPG"
+                        data-name="Abstract Cut-out Screen" data-cat-label="Partitions"
+                        data-desc="Flowing abstract cut-out pattern for contemporary privacy screens with artistic character."
+                        data-specs="<tr><td>Material</td><td>MS / Aluminium</td></tr><tr><td>Thickness</td><td>2mm – 3mm</td></tr><tr><td>Pattern</td><td>Abstract flowing</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Powder coat / Anodised</td></tr><tr><td>Application</td><td>Offices, restaurants, modern interiors</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05969_sq.JPG" alt="Abstract Cut-out Screen"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Abstract Cut-out Screen</div>
+                        </div>
+                    </div>
+                    <div class="px-card" data-cat="partitions" data-img="images/products/partitions/DSC05971_sq.JPG"
+                        data-thumbs="images/products/partitions/DSC05971_sq.JPG|images/products/partitions/DSC05971_sq.JPG|images/products/partitions/DSC05971_sq.JPG"
+                        data-name="Trefoil Jali Divider" data-cat-label="Partitions"
+                        data-desc="Three-lobed trefoil repeat — Gothic-influenced architectural pattern in precision metalwork."
+                        data-specs="<tr><td>Material</td><td>Mild Steel</td></tr><tr><td>Thickness</td><td>2.5mm – 3mm</td></tr><tr><td>Pattern</td><td>Trefoil Gothic repeat</td></tr><tr><td>Max Panel Size</td><td>Custom</td></tr><tr><td>Finish</td><td>Black / Antique / Gold</td></tr><tr><td>Application</td><td>Heritage, Gothic interiors, feature walls</td></tr>">
+                        <div class="px-card-img">
+                            <img src="images/products/partitions/DSC05971_sq.JPG" alt="Trefoil Jali Divider"
+                                loading="lazy">
+                        </div>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
+                        <div class="px-card-info">
+                            <span class="px-card-category">Partitions</span>
+                            <div class="px-card-name">Trefoil Jali Divider</div>
+                        </div>
+                    </div>
+
+
+                </div><!-- /products-grid -->
+                <div class="load-more-wrap" id="loadMoreWrap">
+                    <button class="load-more-btn" id="loadMoreBtn">Load More</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PRODUCT MODAL -->
+    <div class="pmodal-backdrop" id="pmodalBackdrop" role="dialog" aria-modal="true" aria-label="Product detail">
+        <div class="pmodal" id="pmodal">
+            <button class="pmodal-close" id="pmodalClose" aria-label="Close">&#10005;</button>
+            <button class="pmodal-nav pmodal-prev" id="pmodalPrev" aria-label="Previous">&#8592;</button>
+            <button class="pmodal-nav pmodal-next" id="pmodalNext" aria-label="Next">&#8594;</button>
+
+            <!-- Left: Image -->
+            <div class="pmodal-img-panel">
+                <div class="zoom-wrap" id="zoomWrap">
+                    <img class="pmodal-main-img" id="pmodalImg" src="" alt="">
+                    <div class="zoom-lens" id="zoomLens"></div>
+                    <div class="zoom-result" id="zoomResult">
+                        <img id="zoomResultImg" src="" alt="">
+                    </div>
+                </div>
+                <div class="pmodal-thumbs" id="pmodalThumbs"></div>
+            </div>
+
+            <!-- Right: Info -->
+            <div class="pmodal-info-panel">
+                <div class="pmodal-cat" id="pmodalCat"></div>
+                <h2 class="pmodal-name" id="pmodalName"></h2>
+                <div class="pmodal-divider"></div>
+                <p class="pmodal-desc" id="pmodalDesc"></p>
+                <table class="pmodal-specs" id="pmodalSpecs"></table>
+                <div class="pmodal-actions">
+                    <a href="contact-us.html" class="pmodal-enquire">Enquire Now</a>
+                    <a href="https://wa.me/911234567890" target="_blank" class="pmodal-whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                </div>
+
+                <!-- ── AI ROOM VISUALIZER ── -->
+                <div class="ai-visualizer" id="aiVisualizer">
+                    <button class="ai-toggle-btn" id="aiToggleBtn" onclick="toggleAI()">
+                        <i class="fas fa-magic"></i> Try in Your Space
+                    </button>
+                    <div class="ai-panel" id="aiPanel">
+                        <div class="ai-upload-area" id="aiUploadArea">
+                            <input type="file" id="aiFileInput" accept="image/*" style="display:none">
+                            <div class="ai-upload-placeholder" onclick="document.getElementById('aiFileInput').click()">
+                                <i class="fas fa-camera"></i>
+                                <span>Upload your room / staircase photo</span>
+                                <small>JPG, PNG — any angle works</small>
+                            </div>
+                            <img id="aiPreviewImg" style="display:none" alt="Your room">
+                        </div>
+                        <button class="ai-generate-btn" id="aiGenerateBtn" onclick="runAI()" disabled>
+                            <i class="fas fa-wand-magic-sparkles"></i> Visualise Product Here
+                        </button>
+                        <div class="ai-status" id="aiStatus"></div>
+                        <div class="ai-result-wrap" id="aiResultWrap" style="display:none">
+                            <p class="ai-result-label">AI Visualisation</p>
+                            <img id="aiResultImg" alt="AI Visualisation">
+                            <small class="ai-disclaimer">AI-generated preview — actual installation may vary</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <span class="site-title">MetalX</span>
+                    <span class="site-tagline">Architectural Metal Works</span>
+                    <p>Precision metal balusters, partitions and architectural elements crafted for lasting elegance.
+                    </p>
+                    <p style="margin-top:8px;">Write to us:<br><a href="mailto:info@metalx.in">info@metalx.in</a></p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">Products</div>
+                    <div class="footer-links">
+                        <a href="products.html?cat=balusters" class="footer-link">Balusters</a>
+                        <a href="products.html?cat=partitions" class="footer-link">Partitions</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">Company</div>
+                    <div class="footer-links">
+                        <a href="about-us.html" class="footer-link">About Us</a>
+                        <a href="company.html" class="footer-link">Company</a>
+                        <a href="contact-us.html" class="footer-link">Contact Us</a>
+                    </div>
+                </div>
+                <div class="footer-newsletter">
+                    <div class="footer-col-title">Stay Updated</div>
+                    <p>Project showcases and insights from the studio.</p>
+                    <form class="newsletter-form" onsubmit="return false;">
+                        <input type="email" placeholder="Your email address" aria-label="Email">
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright">© 2026 MetalX Architectural Metal Works. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        (function () {
+            const tabs = document.querySelectorAll('.filter-tab');
+            const cards = Array.from(document.querySelectorAll('.px-card'));
+            const loadBtn = document.getElementById('loadMoreBtn');
+            const loadWrap = document.getElementById('loadMoreWrap');
+            const PER_PAGE = 18;
+            let visible = PER_PAGE;
+            let activeFilt = new URLSearchParams(location.search).get('cat') || 'all';
+
+            // Filter
+            function applyFilter(cat) {
+                activeFilt = cat;
+                visible = PER_PAGE;
+                tabs.forEach(t => {
+                    const s = t.dataset.filter === cat;
+                    t.classList.toggle('active', s);
+                    t.setAttribute('aria-selected', s);
+                });
+                renderCards();
+            }
+
+            function getFiltered() {
+                return activeFilt === 'all' ? cards
+                    : cards.filter(c => c.dataset.cat === activeFilt);
+            }
+
+            function renderCards() {
+                const filtered = getFiltered();
+                cards.forEach(c => c.classList.add('hidden'));
+                filtered.slice(0, visible).forEach(c => c.classList.remove('hidden'));
+                loadWrap.style.display = filtered.length > visible ? 'block' : 'none';
+            }
+
+            tabs.forEach(t => t.addEventListener('click', () => applyFilter(t.dataset.filter)));
+            loadBtn.addEventListener('click', () => { visible += PER_PAGE; renderCards(); });
+            applyFilter(activeFilt);
+
+            // ── PRODUCT MODAL ──────────────────────────────────────
+            const backdrop = document.getElementById('pmodalBackdrop');
+            const pmodal = document.getElementById('pmodal');
+            const pImg = document.getElementById('pmodalImg');
+            const pCat = document.getElementById('pmodalCat');
+            const pName = document.getElementById('pmodalName');
+            const pDesc = document.getElementById('pmodalDesc');
+            const pSpecs = document.getElementById('pmodalSpecs');
+            const pThumbs = document.getElementById('pmodalThumbs');
+            const pClose = document.getElementById('pmodalClose');
+            const pPrev = document.getElementById('pmodalPrev');
+            const pNext = document.getElementById('pmodalNext');
+
+            let modalCards = [], modalIdx = 0;
+
+            function openModal(idx) {
+                modalCards = getFiltered();
+                modalIdx = idx;
+                renderModal();
+                backdrop.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                pmodal.scrollTop = 0;
+            }
+
+            function renderModal() {
+                const c = modalCards[modalIdx];
+                if (!c) return;
+
+                // Main image — re-query every time because setupZoom cloneNode replaces the DOM node
+                const pImg = document.getElementById('pmodalImg');
+                pImg.src = c.dataset.img || '';
+                pImg.alt = c.dataset.name || '';
+
+                // Category & name
+                pCat.textContent = c.dataset.catLabel || '';
+                pName.textContent = c.dataset.name || '';
+
+                // Description
+                pDesc.textContent = c.dataset.desc || '';
+
+                // Specs table
+                pSpecs.innerHTML = c.dataset.specs
+                    ? c.dataset.specs.replace(/&quot;/g, '"')
+                    : '';
+
+                // Thumbnail strip
+                pThumbs.innerHTML = '';
+                const thumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|') : [c.dataset.img];
+                thumbs.forEach((src, i) => {
+                    if (!src) return;
+                    const t = document.createElement('img');
+                    t.src = src;
+                    t.className = 'pmodal-thumb' + (i === 0 ? ' active' : '');
+                    t.addEventListener('click', function () {
+                        pImg.src = src;
+                        pThumbs.querySelectorAll('.pmodal-thumb').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        setupZoom();
+                    });
+                    pThumbs.appendChild(t);
+                });
+
+                // Init zoom after image loads
+                if (pImg.complete && pImg.naturalWidth > 0) {
+                    setupZoom();
+                } else {
+                    pImg.addEventListener('load', setupZoom, { once: true });
+                }
+            }
+
+            // ── ZOOM (Flipkart-style) ─────────────────────────────
+            // ── ZOOM — fixed viewport box ──────────────────────
+            var _zoomBox = null;
+
+            function ensureZoomBox() {
+                if (_zoomBox) return _zoomBox;
+                var box = document.createElement('div');
+                box.id = '_zbox';
+                box.style.cssText = 'display:none;position:fixed;width:360px;height:360px;'
+                    + 'border:1px solid #e2d5c0;border-top:2px solid #b8943f;background:#fff;'
+                    + 'overflow:hidden;box-shadow:0 12px 48px rgba(28,24,20,.22);z-index:9999;pointer-events:none;';
+                var img = document.createElement('img');
+                img.id = '_zimg';
+                img.style.cssText = 'position:absolute;max-width:none;pointer-events:none;';
+                box.appendChild(img);
+                document.body.appendChild(box);
+                _zoomBox = box;
+                return box;
+            }
+
+            function setupZoom() {
+                var wrap = document.getElementById('zoomWrap');
+                var lens = document.getElementById('zoomLens');
+                var mImg = document.getElementById('pmodalImg');
+                if (!wrap || !lens || !mImg) return;
+
+                // Remove previous listeners via clone
+                var nw = wrap.cloneNode(true);
+                wrap.parentNode.replaceChild(nw, wrap);
+                wrap = document.getElementById('zoomWrap');
+                lens = document.getElementById('zoomLens');
+
+                var ZOOM = 3.5;
+                var box, rImg;
+
+                wrap.addEventListener('mouseenter', function () {
+                    if (window.innerWidth <= 900) return;
+                    box = ensureZoomBox();
+                    rImg = document.getElementById('_zimg');
+                    var src = document.getElementById('pmodalImg').src;
+                    rImg.src = src;
+                    rImg.style.width = (wrap.offsetWidth * ZOOM) + 'px';
+                    rImg.style.height = (wrap.offsetHeight * ZOOM) + 'px';
+                    box.style.display = 'block';
+                    lens.style.display = 'block';
+                });
+
+                wrap.addEventListener('mousemove', function (e) {
+                    if (window.innerWidth <= 900 || !box) return;
+                    var rect = wrap.getBoundingClientRect();
+                    var lw = lens.offsetWidth;
+                    var lh = lens.offsetHeight;
+                    var lx = Math.max(0, Math.min(e.clientX - rect.left - lw / 2, wrap.offsetWidth - lw));
+                    var ly = Math.max(0, Math.min(e.clientY - rect.top - lh / 2, wrap.offsetHeight - lh));
+                    lens.style.left = lx + 'px';
+                    lens.style.top = ly + 'px';
+                    rImg.style.left = -(lx * ZOOM) + 'px';
+                    rImg.style.top = -(ly * ZOOM) + 'px';
+                    // Position box to right of modal
+                    var mr = document.getElementById('pmodal').getBoundingClientRect();
+                    var bh = box.offsetHeight;
+                    var top = Math.max(10, Math.min(e.clientY - bh / 2, window.innerHeight - bh - 10));
+                    box.style.left = (mr.right + 14) + 'px';
+                    box.style.top = top + 'px';
+                });
+
+                wrap.addEventListener('mouseleave', function () {
+                    if (box) box.style.display = 'none';
+                    lens.style.display = 'none';
+                });
+            }
+
+            function closeModal() {
+                backdrop.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            // Open on card click
+            cards.forEach(function (c) {
+                c.addEventListener('click', function (e) {
+                    if (e.target.closest('.px-enquire')) { location.href = 'contact-us.html'; return; }
+                    const filtered = getFiltered();
+                    const fi = filtered.indexOf(c);
+                    if (fi > -1) openModal(fi);
+                });
+            });
+
+            // ── Hover slideshow on cards ──────────────────────────
+            cards.forEach(function (c) {
+                var rawThumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|').filter(Boolean) : [];
+                if (!rawThumbs.length) return;
+                // Always ensure at least 3 entries so slide is visible even with same image
+                var thumbs = rawThumbs;
+                while (thumbs.length < 3) thumbs = thumbs.concat(rawThumbs);
+
+                var imgWrap = c.querySelector('.px-card-img');
+                var imgA = imgWrap.querySelector('img'); // existing img = layer A
+                imgA.style.cssText += 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .8s ease,transform 1.2s ease;z-index:1;';
+
+                // Layer B — sits behind A, shows next image
+                var imgB = document.createElement('img');
+                imgB.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:1;';
+                imgB.src = thumbs[1] || thumbs[0];
+                imgB.alt = imgA.alt;
+                imgWrap.appendChild(imgB);
+
+                // Dots
+                var dotsWrap = document.createElement('div');
+                dotsWrap.className = 'card-slide-dots';
+                thumbs.forEach(function (_, i) {
+                    var d = document.createElement('span');
+                    d.className = 'card-slide-dot' + (i === 0 ? ' active' : '');
+                    dotsWrap.appendChild(d);
+                });
+                imgWrap.appendChild(dotsWrap);
+
+                var slideIdx = 0;
+                var timer = null;
+                var dots = dotsWrap.querySelectorAll('.card-slide-dot');
+
+                function goSlide(idx) {
+                    slideIdx = (idx + thumbs.length) % thumbs.length;
+                    var nextIdx = (slideIdx + 1) % thumbs.length;
+
+                    // Preload next into B (behind)
+                    imgB.src = thumbs[nextIdx];
+
+                    // Fade A out → B shows through
+                    imgA.style.opacity = '0';
+                    imgA.style.transform = 'scale(1.08)';
+
+                    setTimeout(function () {
+                        imgA.src = thumbs[slideIdx];
+                        imgA.style.transition = 'none';
+                        imgA.style.opacity = '1';
+                        imgA.style.transform = 'scale(1)';
+                        requestAnimationFrame(function () {
+                            requestAnimationFrame(function () {
+                                imgA.style.transition = 'opacity .8s ease, transform 1.2s ease';
+                            });
+                        });
+                    }, 800);
+
+                    dots.forEach(function (d, i) { d.classList.toggle('active', i === slideIdx); });
+                }
+
+                c.addEventListener('mouseenter', function () {
+                    slideIdx = 0;
+                    imgA.src = thumbs[0];
+                    imgA.style.opacity = '1';
+                    imgA.style.transform = 'scale(1)';
+                    goSlide(1);
+                    timer = setInterval(function () { goSlide(slideIdx + 1); }, 2500);
+                });
+
+                c.addEventListener('mouseleave', function () {
+                    clearInterval(timer);
+                    imgA.src = thumbs[0];
+                    imgA.style.opacity = '1';
+                    imgA.style.transform = 'scale(1)';
+                    dots.forEach(function (d, i) { d.classList.toggle('active', i === 0); });
+                });
+            });
+
+            // Close
+            pClose.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', function (e) {
+                if (e.target === backdrop) closeModal();
+            });
+
+            // Prev / Next
+            pPrev.addEventListener('click', function () {
+                modalIdx = (modalIdx - 1 + modalCards.length) % modalCards.length;
+                renderModal();
+                pmodal.scrollTop = 0;
+                if (typeof resetAI === 'function') resetAI();
+            });
+            pNext.addEventListener('click', function () {
+                modalIdx = (modalIdx + 1) % modalCards.length;
+                renderModal();
+                pmodal.scrollTop = 0;
+                if (typeof resetAI === 'function') resetAI();
+            });
+
+            // Keyboard
+            document.addEventListener('keydown', function (e) {
+                if (!backdrop.classList.contains('open')) return;
+                if (e.key === 'Escape') closeModal();
+                if (e.key === 'ArrowLeft') { pPrev.click(); }
+                if (e.key === 'ArrowRight') { pNext.click(); }
+            });
+
+            // Hide zoom box when modal closes
+            backdrop.addEventListener('click', function (e) {
+                if (e.target === backdrop && _zoomBox) _zoomBox.style.display = 'none';
+            });
+            document.getElementById('pmodalClose').addEventListener('click', function () {
+                if (_zoomBox) _zoomBox.style.display = 'none';
+            });
+
+        })();
+
+        // ════════════════════════════════════════════════════════
+        // AI ROOM VISUALIZER — Gemini native image generation
+        // ════════════════════════════════════════════════════════
+        var AI_KEY = '';
+        var AI_MODEL = 'gemini-2.0-flash-preview-image-generation';
+        var aiFile = null;   // user uploaded room image
+        var aiProdSrc = '';    // current product image src
+
+        // Reset AI panel when modal opens new product
+        var aiModalBackdrop = document.getElementById('pmodalBackdrop');
+        if (aiModalBackdrop) {
+            aiModalBackdrop.addEventListener('click', function (e) {
+                if (e.target === this) resetAI();
+            });
+        }
+
+        function toggleAI() {
+            var panel = document.getElementById('aiPanel');
+            var btn = document.getElementById('aiToggleBtn');
+            var open = panel.classList.toggle('open');
+            btn.innerHTML = open
+                ? '<i class="fas fa-times"></i> Close Visualiser'
+                : '<i class="fas fa-magic"></i> Try in Your Space';
+            if (open && !aiFile) {
+                document.getElementById('aiStatus').textContent = '';
+                document.getElementById('aiResultWrap').style.display = 'none';
+            }
+        }
+
+        function resetAI() {
+            aiFile = null;
+            var panel = document.getElementById('aiPanel');
+            if (panel) panel.classList.remove('open');
+            var btn = document.getElementById('aiToggleBtn');
+            if (btn) btn.innerHTML = '<i class="fas fa-magic"></i> Try in Your Space';
+            var prev = document.getElementById('aiPreviewImg');
+            if (prev) { prev.style.display = 'none'; prev.src = ''; }
+            var ph = document.querySelector('.ai-upload-placeholder');
+            if (ph) ph.style.display = 'flex';
+            var gen = document.getElementById('aiGenerateBtn');
+            if (gen) gen.disabled = true;
+            var stat = document.getElementById('aiStatus');
+            if (stat) stat.textContent = '';
+            var res = document.getElementById('aiResultWrap');
+            if (res) res.style.display = 'none';
+        }
+
+        // File input change
+        var aiFileInput = document.getElementById('aiFileInput');
+        if (aiFileInput) {
+            aiFileInput.addEventListener('change', function (e) {
+                var f = e.target.files[0];
+                if (!f) return;
+                aiFile = f;
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                    var prev = document.getElementById('aiPreviewImg');
+                    var ph = document.querySelector('.ai-upload-placeholder');
+                    var gen = document.getElementById('aiGenerateBtn');
+                    var stat = document.getElementById('aiStatus');
+                    if (prev) {
+                        prev.src = ev.target.result;
+                        prev.style.display = 'block';
+                    }
+                    if (ph) ph.style.display = 'none';
+                    if (gen) gen.disabled = false;
+                    if (stat) stat.textContent = 'Photo ready — click Visualise!';
+                };
+                reader.readAsDataURL(f);
+            });
+        }
+
+        // Drag & drop support on upload area
+        (function () {
+            var area = document.getElementById('aiUploadArea');
+            if (!area || !aiFileInput) return;
+            area.addEventListener('dragover', function (e) { e.preventDefault(); area.style.borderColor = '#b8943f'; });
+            area.addEventListener('dragleave', function () { area.style.borderColor = ''; });
+            area.addEventListener('drop', function (e) {
+                e.preventDefault();
+                area.style.borderColor = '';
+                var f = e.dataTransfer.files[0];
+                if (!f || !f.type.startsWith('image/')) return;
+                var dt = new DataTransfer();
+                dt.items.add(f);
+                aiFileInput.files = dt.files;
+                aiFileInput.dispatchEvent(new Event('change'));
+            });
+        })();
+
+        async function runAI() {
+            if (!aiFile) return;
+
+            var btn = document.getElementById('aiGenerateBtn');
+            var stat = document.getElementById('aiStatus');
+            var resW = document.getElementById('aiResultWrap');
+            var resI = document.getElementById('aiResultImg');
+
+            // Get current product image src
+            var prodImgEl = document.getElementById('pmodalImg');
+            var prodName = document.getElementById('pmodalName').textContent || 'this product';
+            var prodCat = document.getElementById('pmodalCat').textContent || '';
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            stat.textContent = 'Analysing your space with AI...';
+            resW.style.display = 'none';
+
+            try {
+                // Read room image as base64
+                var roomB64 = await fileToBase64(aiFile);
+                var roomMime = aiFile.type || 'image/jpeg';
+
+                // Read product image as base64
+                var prodB64 = await urlToBase64(prodImgEl.src);
+
+                // Build prompt
+                var prompt = 'You are an expert interior design visualisation AI.\n\n'
+                    + 'Task: Realistically composite the provided metal product onto the room/space photo.\n\n'
+                    + 'Product: "' + prodName + '" (' + prodCat + ')\n'
+                    + 'This is a metal architectural element — place it naturally in the scene where it would typically be installed (staircase railing, balcony, partition wall, etc.).\n\n'
+                    + 'Instructions:\n'
+                    + '1. Keep the room/background exactly as-is — do not change walls, floors, or furniture\n'
+                    + '2. Place the product in the most logical installation position in the space\n'
+                    + '3. Match lighting, shadows and perspective of the room\n'
+                    + '4. Make the result look like a professional architectural render\n'
+                    + '5. The product should look like it is actually installed, not just pasted on top\n'
+                    + '6. Output only the final composite image — full scene, realistic quality\n\n'
+                    + 'Return a photorealistic image showing the product installed in the user\'s space.';
+
+                // Interactions API — input as a single user_input step wrapping all content
+                var endpoint = 'https://generativelanguage.googleapis.com/v1/interactions?key=' + AI_KEY;
+
+                var payload = {
+                    model: 'gemini-3.1-flash-image',
+                    input: [
+                        {
+                            type: 'user_input',
+                            content: [
+                                { type: 'text', text: prompt },
+                                { type: 'image', data: roomB64, mime_type: roomMime },
+                                { type: 'image', data: prodB64, mime_type: 'image/jpeg' }
+                            ]
+                        }
+                    ],
+                    response_format: { type: 'image' }
+                };
+
+                stat.textContent = 'AI is compositing your space... (~15–30s)';
+
+                var resp = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!resp.ok) {
+                    var errBody = await resp.json();
+                    throw new Error(errBody.error?.message || 'API error ' + resp.status);
+                }
+
+                var data = await resp.json();
+
+                // Extract image — check steps first, then output_image convenience prop
+                var imgData = null;
+                var imgMimeOut = 'image/png';
+
+                var steps = data.steps || [];
+                for (var s of steps) {
+                    if (s.type === 'model_output') {
+                        var blocks = s.content || [];
+                        for (var b of blocks) {
+                            if (b.type === 'image' && b.data) {
+                                imgData = b.data;
+                                imgMimeOut = b.mime_type || 'image/png';
+                                break;
+                            }
+                        }
+                    }
+                    if (imgData) break;
+                }
+                if (!imgData && data.output_image && data.output_image.data) {
+                    imgData = data.output_image.data;
+                    imgMimeOut = data.output_image.mime_type || 'image/png';
+                }
+
+                if (!imgData) {
+                    throw new Error('No image in response. The AI may need a clearer room photo.');
+                }
+
+                resI.src = 'data:' + imgMimeOut + ';base64,' + imgData;
+                resW.style.display = 'block';
+                stat.textContent = '✓ Visualisation ready!';
+
+            } catch (err) {
+                stat.textContent = '⚠ ' + (err.message || 'Something went wrong. Please try again.');
+                console.error('AI error:', err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Visualise Product Here';
+            }
+        }
+
+        // Helpers
+        // ── Helpers ──────────────────────────────────────────
+        function fileToBase64(file) {
+            return new Promise(function (resolve, reject) {
+                var r = new FileReader();
+                r.onload = function (e) { resolve(e.target.result.split(',')[1]); };
+                r.onerror = reject;
+                r.readAsDataURL(file);
+            });
+        }
+
+        // Canvas-based — works on file:// without fetch CORS
+        function urlToBase64(url) {
+            return new Promise(function (resolve, reject) {
+                var img = new Image();
+                img.onload = function () {
+                    var c = document.createElement('canvas');
+                    c.width = img.naturalWidth || 800;
+                    c.height = img.naturalHeight || 800;
+                    var ctx = c.getContext('2d');
+                    // White background (product PNGs are transparent)
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, c.width, c.height);
+                    ctx.drawImage(img, 0, 0);
+                    try {
+                        resolve(c.toDataURL('image/jpeg', 0.9).split(',')[1]);
+                    } catch (e) {
+                        reject(new Error('Canvas tainted. Open via http://localhost:8081'));
+                    }
+                };
+                img.onerror = function () {
+                    // Fallback: try drawing existing DOM image element
+                    var dom = document.getElementById('pmodalImg');
+                    if (dom && dom.complete && dom.naturalWidth > 0) {
+                        var c2 = document.createElement('canvas');
+                        c2.width = dom.naturalWidth || 800;
+                        c2.height = dom.naturalHeight || 800;
+                        var ctx2 = c2.getContext('2d');
+                        ctx2.fillStyle = '#ffffff';
+                        ctx2.fillRect(0, 0, c2.width, c2.height);
+                        ctx2.drawImage(dom, 0, 0);
+                        try { resolve(c2.toDataURL('image/jpeg', 0.9).split(',')[1]); }
+                        catch (e2) { reject(new Error('Please open site via http://localhost:8081 for AI feature')); }
+                    } else {
+                        reject(new Error('Product image not accessible. Open via http://localhost:8081'));
+                    }
+                };
+                img.src = url;
+            });
+        }
+    </script>
+</body>
+
+</html>
