@@ -115,7 +115,7 @@
             padding: 16px;
             display: block;
             opacity: 1;
-            transition: opacity .4s ease;
+            transition: opacity .25s ease;
         }
 
         .px-card:hover .px-card-img img {
@@ -484,27 +484,20 @@
 
         .pmodal-cat {
             font-family: var(--font-body);
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 600;
             letter-spacing: .22em;
             text-transform: uppercase;
             color: var(--gold-deep);
-            margin-bottom: 8px;
+            margin-bottom: 20px;
         }
 
         .pmodal-name {
-            font-family: var(--font-display);
-            font-size: clamp(1.5rem, 2.5vw, 2.1rem);
-            font-weight: 400;
-            color: var(--ink);
-            line-height: 1.2;
+            display: none;
         }
 
         .pmodal-divider {
-            width: 40px;
-            height: 1.5px;
-            background: linear-gradient(90deg, var(--gold-deep), var(--gold-light));
-            margin: 16px 0;
+            display: none;
         }
 
         .pmodal-specs {
@@ -543,11 +536,7 @@
         }
 
         .pmodal-desc {
-            font-size: 13px;
-            font-weight: 300;
-            color: var(--ink-muted);
-            line-height: 1.8;
-            margin-bottom: 24px;
+            display: none;
         }
 
         .pmodal-actions {
@@ -759,8 +748,8 @@
             }
 
             .pmodal-name {
-                font-size: 1.3rem;
-            }
+            display: none;
+        }
         }
     </style>
 </head>
@@ -2207,16 +2196,17 @@
                     setTimeout(function () {
                         img.src = rawThumbs[slideIdx];
                         img.style.opacity = '1';
-                    }, 200);
+                    }, 100);
                     dots.forEach(function (d, i) {
                         d.classList.toggle('active', i === slideIdx);
                     });
                 }
 
                 c.addEventListener('mouseenter', function () {
+                    clearInterval(timer);
                     timer = setInterval(function () {
                         fadeToSlide(slideIdx + 1);
-                    }, 2200);
+                    }, 650);
                 });
 
                 c.addEventListener('mouseleave', function () {
