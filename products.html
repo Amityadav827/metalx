@@ -79,7 +79,7 @@
             gap: 0;
         }
 
-        /* Card */
+                /* Card */
         .px-card {
             display: block;
             position: relative;
@@ -105,20 +105,21 @@
             width: 100%;
             aspect-ratio: 1;
             overflow: hidden;
-            /* background: var(--beige-light); */
         }
 
         .px-card-img img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             object-position: center;
             padding: 16px;
-            transition: transform .65s cubic-bezier(.4, 0, .2, 1);
+            display: block;
+            opacity: 1;
+            transition: opacity .4s ease;
         }
 
         .px-card:hover .px-card-img img {
-            transform: scale(1.06);
+            transform: none;
         }
 
         /* Enquire chip */
@@ -2100,29 +2101,20 @@
                 });
             });
 
-            // ── Hover slideshow on cards ──────────────────────────
+            
+            // ── Hover slideshow on cards (Smooth fade, no zoom, original dimensions) ──
             cards.forEach(function (c) {
                 var rawThumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|').filter(Boolean) : [];
-                if (!rawThumbs.length) return;
-                // Always ensure at least 3 entries so slide is visible even with same image
-                var thumbs = rawThumbs;
-                while (thumbs.length < 3) thumbs = thumbs.concat(rawThumbs);
+                if (rawThumbs.length <= 1) return;
 
                 var imgWrap = c.querySelector('.px-card-img');
-                var imgA = imgWrap.querySelector('img'); // existing img = layer A
-                imgA.style.cssText += 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .8s ease,transform 1.2s ease;z-index:1;';
+                var img = imgWrap.querySelector('img');
+                if (!img) return;
 
-                // Layer B — sits behind A, shows next image
-                var imgB = document.createElement('img');
-                imgB.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:1;';
-                imgB.src = thumbs[1] || thumbs[0];
-                imgB.alt = imgA.alt;
-                imgWrap.appendChild(imgB);
-
-                // Dots
+                // Dots indicator
                 var dotsWrap = document.createElement('div');
                 dotsWrap.className = 'card-slide-dots';
-                thumbs.forEach(function (_, i) {
+                rawThumbs.forEach(function (_, i) {
                     var d = document.createElement('span');
                     d.className = 'card-slide-dot' + (i === 0 ? ' active' : '');
                     dotsWrap.appendChild(d);
@@ -2133,47 +2125,29 @@
                 var timer = null;
                 var dots = dotsWrap.querySelectorAll('.card-slide-dot');
 
-                function goSlide(idx) {
-                    slideIdx = (idx + thumbs.length) % thumbs.length;
-                    var nextIdx = (slideIdx + 1) % thumbs.length;
-
-                    // Preload next into B (behind)
-                    imgB.src = thumbs[nextIdx];
-
-                    // Fade A out → B shows through
-                    imgA.style.opacity = '0';
-                    imgA.style.transform = 'scale(1.08)';
-
+                function fadeToSlide(idx) {
+                    slideIdx = (idx + rawThumbs.length) % rawThumbs.length;
+                    img.style.opacity = '0';
                     setTimeout(function () {
-                        imgA.src = thumbs[slideIdx];
-                        imgA.style.transition = 'none';
-                        imgA.style.opacity = '1';
-                        imgA.style.transform = 'scale(1)';
-                        requestAnimationFrame(function () {
-                            requestAnimationFrame(function () {
-                                imgA.style.transition = 'opacity .8s ease, transform 1.2s ease';
-                            });
-                        });
-                    }, 800);
-
-                    dots.forEach(function (d, i) { d.classList.toggle('active', i === slideIdx); });
+                        img.src = rawThumbs[slideIdx];
+                        img.style.opacity = '1';
+                    }, 200);
+                    dots.forEach(function (d, i) {
+                        d.classList.toggle('active', i === slideIdx);
+                    });
                 }
 
                 c.addEventListener('mouseenter', function () {
-                    slideIdx = 0;
-                    imgA.src = thumbs[0];
-                    imgA.style.opacity = '1';
-                    imgA.style.transform = 'scale(1)';
-                    goSlide(1);
-                    timer = setInterval(function () { goSlide(slideIdx + 1); }, 2500);
+                    timer = setInterval(function () {
+                        fadeToSlide(slideIdx + 1);
+                    }, 2200);
                 });
 
                 c.addEventListener('mouseleave', function () {
                     clearInterval(timer);
-                    imgA.src = thumbs[0];
-                    imgA.style.opacity = '1';
-                    imgA.style.transform = 'scale(1)';
-                    dots.forEach(function (d, i) { d.classList.toggle('active', i === 0); });
+                    if (slideIdx !== 0) {
+                        fadeToSlide(0);
+                    }
                 });
             });
 
