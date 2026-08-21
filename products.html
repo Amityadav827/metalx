@@ -68,6 +68,13 @@
             border-bottom-color: var(--gold-mid);
         }
 
+        .has-dropdown.dropdown-open .nav-dropdown {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            transform: translateX(-50%) translateY(0);
+        }
+
         /* Grid */
         .products-grid-wrap {
             padding: 48px 0 100px;
@@ -772,7 +779,8 @@
                         <a href="products.html" class="nav-link active">Products</a>
                         <div class="nav-dropdown" role="region" aria-label="Products menu">
                             <div class="dropdown-items">
-                                <a href="/railings-modern.html" class="dropdown-item">Railings</a>
+                                <a href="products.html?cat=railings" class="dropdown-item">Railings</a>
+                                <a href="products.html?cat=partitions" class="dropdown-item">Partitions</a>
                             </div>
                         </div>
                     </div>
@@ -797,7 +805,8 @@
             <li class="mobile-nav-item">
                 <div class="mobile-nav-link mobile-nav-toggle">Products <span class="toggle-icon">+</span></div>
                 <div class="mobile-sub-menu">
-                    <a href="/railings-modern.html" class="mobile-sub-link">Railings</a>
+                    <a href="products.html?cat=railings" class="mobile-sub-link">Railings</a>
+                    <a href="products.html?cat=partitions" class="mobile-sub-link">Partitions</a>
                 </div>
             </li>
             <li class="mobile-nav-item"><a href="contact-us.html" class="mobile-nav-link">Contact Us</a></li>
@@ -812,8 +821,8 @@
             </div>
             <div class="container">
                 <div class="filter-tabs" role="tablist" id="filterTabs">
-                    <button class="filter-tab active" data-filter="all">All Products</button>
-                    <button class="filter-tab" data-filter="railings">Railings</button>
+                    <button class="filter-tab" data-filter="all">All Products</button>
+                    <button class="filter-tab active" data-filter="railings">Railings</button>
                     <button class="filter-tab" data-filter="partitions">Partitions</button>
                 </div>
             </div>
@@ -1877,6 +1886,27 @@
     <script src="js/main.js"></script>
     <script>
         (function () {
+            const productsDropdown = document.querySelector('.primary-nav .has-dropdown');
+            let dropdownTimer;
+
+            if (productsDropdown) {
+                const openDropdown = () => {
+                    clearTimeout(dropdownTimer);
+                    productsDropdown.classList.add('dropdown-open');
+                };
+                const closeDropdown = () => {
+                    clearTimeout(dropdownTimer);
+                    dropdownTimer = setTimeout(() => {
+                        productsDropdown.classList.remove('dropdown-open');
+                    }, 400);
+                };
+
+                productsDropdown.addEventListener('pointerenter', openDropdown);
+                productsDropdown.addEventListener('pointerleave', closeDropdown);
+                productsDropdown.addEventListener('focusin', openDropdown);
+                productsDropdown.addEventListener('focusout', closeDropdown);
+            }
+
             const tabs = document.querySelectorAll('.filter-tab');
             const cards = Array.from(document.querySelectorAll('.px-card'));
             const loadBtn = document.getElementById('loadMoreBtn');
@@ -1884,7 +1914,8 @@
             const PER_PAGE = 18;
             const LOAD_MORE_STEP = 9;
             let visible = PER_PAGE;
-            let activeFilt = new URLSearchParams(location.search).get('cat') || 'all';
+            const initialCat = new URLSearchParams(location.search).get('cat');
+            let activeFilt = ['all', 'railings', 'partitions'].includes(initialCat) ? initialCat : 'railings';
 
             // Filter
             function applyFilter(cat) {
@@ -1912,7 +1943,8 @@
             }
 
             function getInitialVisibleCount() {
-                return getFiltered().slice(0, PER_PAGE).filter(isDisplayableCard).length;
+                const filtered = getDisplayableFiltered();
+                return activeFilt === 'all' ? Math.min(PER_PAGE, filtered.length) : filtered.length;
             }
 
             function renderCards() {

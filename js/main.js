@@ -232,6 +232,28 @@
         if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) closeMenu();
     });
 
+    /* ── Desktop dropdown stability ── */
+    document.querySelectorAll('.primary-nav .has-dropdown').forEach(function (dropdown) {
+        let closeTimer;
+
+        function openDropdown() {
+            clearTimeout(closeTimer);
+            dropdown.classList.add('dropdown-open');
+        }
+
+        function closeDropdown() {
+            clearTimeout(closeTimer);
+            closeTimer = setTimeout(function () {
+                dropdown.classList.remove('dropdown-open');
+            }, 400);
+        }
+
+        dropdown.addEventListener('pointerenter', openDropdown);
+        dropdown.addEventListener('pointerleave', closeDropdown);
+        dropdown.addEventListener('focusin', openDropdown);
+        dropdown.addEventListener('focusout', closeDropdown);
+    });
+
     /* ── Mobile sub-menu toggles ── */
     document.querySelectorAll('.mobile-nav-toggle').forEach(function (toggle) {
         toggle.addEventListener('click', function () {
