@@ -772,7 +772,7 @@
                         <a href="products.html" class="nav-link active">Products</a>
                         <div class="nav-dropdown" role="region" aria-label="Products menu">
                             <div class="dropdown-items">
-                                <a href="railings-modern.html" class="dropdown-item">Railings</a>
+                                <a href="/railings-modern.html" class="dropdown-item">Railings</a>
                             </div>
                         </div>
                     </div>
@@ -797,7 +797,7 @@
             <li class="mobile-nav-item">
                 <div class="mobile-nav-link mobile-nav-toggle">Products <span class="toggle-icon">+</span></div>
                 <div class="mobile-sub-menu">
-                    <a href="railings-modern.html" class="mobile-sub-link">Railings</a>
+                    <a href="/railings-modern.html" class="mobile-sub-link">Railings</a>
                 </div>
             </li>
             <li class="mobile-nav-item"><a href="contact-us.html" class="mobile-nav-link">Contact Us</a></li>
@@ -1904,7 +1904,7 @@
             // Filter
             function applyFilter(cat) {
                 activeFilt = cat;
-                visible = PER_PAGE;
+                visible = getInitialVisibleCount();
                 tabs.forEach(t => {
                     const s = t.dataset.filter === cat;
                     t.classList.toggle('active', s);
@@ -1918,8 +1918,20 @@
                     : cards.filter(c => c.dataset.cat === activeFilt);
             }
 
+            function isDisplayableCard(card) {
+                return card.style.display !== 'none';
+            }
+
+            function getDisplayableFiltered() {
+                return getFiltered().filter(isDisplayableCard);
+            }
+
+            function getInitialVisibleCount() {
+                return getFiltered().slice(0, PER_PAGE).filter(isDisplayableCard).length;
+            }
+
             function renderCards() {
-                const filtered = getFiltered();
+                const filtered = getDisplayableFiltered();
                 cards.forEach(c => c.classList.add('hidden'));
                 filtered.slice(0, visible).forEach(c => c.classList.remove('hidden'));
                 loadWrap.style.display = filtered.length > visible ? 'block' : 'none';
@@ -1927,7 +1939,7 @@
 
             tabs.forEach(t => t.addEventListener('click', () => applyFilter(t.dataset.filter)));
             loadBtn.addEventListener('click', () => {
-                visible = Math.min(visible + LOAD_MORE_STEP, getFiltered().length);
+                visible = Math.min(visible + LOAD_MORE_STEP, getDisplayableFiltered().length);
                 renderCards();
             });
             applyFilter(activeFilt);
