@@ -552,6 +552,15 @@ h6+.divider {
     position: relative;
 }
 
+.has-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -80px;
+    right: -80px;
+    height: 24px;
+}
+
 .nav-dropdown {
     position: absolute;
     top: calc(100% + 8px);
@@ -566,6 +575,7 @@ h6+.divider {
     pointer-events: none;
     transition: opacity .28s ease, transform .28s ease, visibility .28s;
     box-shadow: 0 16px 48px rgba(28, 24, 20, .12);
+    z-index: 1001;
 }
 
 .nav-dropdown::before {
