@@ -2198,6 +2198,9 @@
             // ── Hover slideshow on cards (Smooth fade, no zoom, original dimensions) ──
             cards.forEach(function (c) {
                 var rawThumbs = c.dataset.thumbs ? c.dataset.thumbs.split('|').filter(Boolean) : [];
+                rawThumbs = rawThumbs.filter(function (src, i, arr) {
+                    return arr.indexOf(src) === i;
+                });
                 if (rawThumbs.length <= 1) return;
 
                 var imgWrap = c.querySelector('.px-card-img');
@@ -2217,16 +2220,34 @@
                 var slideIdx = 0;
                 var timer = null;
                 var dots = dotsWrap.querySelectorAll('.card-slide-dot');
+                var slideRequest = 0;
+
+                function preloadCardImage(src, done) {
+                    var preloaded = new Image();
+                    preloaded.onload = done;
+                    preloaded.onerror = done;
+                    preloaded.src = src;
+                }
 
                 function fadeToSlide(idx) {
-                    slideIdx = (idx + rawThumbs.length) % rawThumbs.length;
-                    img.style.opacity = '0';
-                    setTimeout(function () {
-                        img.src = rawThumbs[slideIdx];
-                        img.style.opacity = '1';
-                    }, 100);
+                    var nextIdx = (idx + rawThumbs.length) % rawThumbs.length;
+                    var nextSrc = rawThumbs[nextIdx];
+                    var requestId = ++slideRequest;
+                    preloadCardImage(nextSrc, function () {
+                        if (requestId !== slideRequest) return;
+                        slideIdx = nextIdx;
+                        img.style.transition = 'opacity 380ms ease';
+                        img.style.opacity = '.68';
+                        setTimeout(function () {
+                            if (requestId !== slideRequest) return;
+                            img.src = nextSrc;
+                            requestAnimationFrame(function () {
+                                img.style.opacity = '1';
+                            });
+                        }, 190);
+                    });
                     dots.forEach(function (d, i) {
-                        d.classList.toggle('active', i === slideIdx);
+                        d.classList.toggle('active', i === nextIdx);
                     });
                 }
 
@@ -2234,13 +2255,33 @@
                     clearInterval(timer);
                     timer = setInterval(function () {
                         fadeToSlide(slideIdx + 1);
-                    }, 650);
+                    }, 1600);
+                });
+
+                c.addEventListener('pointerenter', function () {
+                    clearInterval(timer);
+                    timer = setInterval(function () {
+                        fadeToSlide(slideIdx + 1);
+                    }, 1600);
                 });
 
                 c.addEventListener('mouseleave', function () {
                     clearInterval(timer);
-                    if (slideIdx !== 0) {
+                    ++slideRequest;
+                    if (slideIdx !== 0 || img.getAttribute('src') !== rawThumbs[0]) {
                         fadeToSlide(0);
+                    } else {
+                        img.style.opacity = '1';
+                    }
+                });
+
+                c.addEventListener('pointerleave', function () {
+                    clearInterval(timer);
+                    ++slideRequest;
+                    if (slideIdx !== 0 || img.getAttribute('src') !== rawThumbs[0]) {
+                        fadeToSlide(0);
+                    } else {
+                        img.style.opacity = '1';
                     }
                 });
             });
