@@ -17,16 +17,26 @@
             cursor: pointer;
         }
 
+        .home-product-card:hover .px-card-img img {
+            transform: none;
+        }
+
         .home-product-card .px-card-overlay {
-            opacity: 0;
-            transform: translateY(-4px);
+            position: static;
+            inset: auto;
+            background: transparent;
+            padding: 0;
+            display: block;
+            pointer-events: auto;
+            opacity: 1;
+            transform: none;
             transition: opacity .25s, transform .25s;
         }
 
         .home-product-card:hover .px-card-overlay,
         .home-product-card:focus-visible .px-card-overlay {
             opacity: 1;
-            transform: translateY(0);
+            transform: none;
         }
 
         .home-product-card .px-enquire {
@@ -39,6 +49,18 @@
             color: var(--white);
             padding: 6px 12px;
             display: block;
+        }
+
+        .home-product-card .px-card-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            text-align: left !important;
+        }
+
+        .home-product-card .px-card-category {
+            margin-bottom: 0;
         }
 
         .pmodal-backdrop {
@@ -687,9 +709,9 @@
                     <div class="px-card-img" style="padding-top:100%;">
                         <img src="images/products/balusters/square-baluster.png" alt="Square Baluster" loading="lazy" style="object-fit:contain; padding:18px;">
                     </div>
-                    <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     <div class="px-card-info" style="padding:16px 18px; text-align:center;">
                         <span class="px-card-category" style="margin-bottom:0;">Railings</span>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     </div>
                 </div>
 
@@ -703,9 +725,9 @@
                     <div class="px-card-img" style="padding-top:100%;">
                         <img src="images/products/balusters/twist-baluster.png" alt="Twist Baluster" loading="lazy" style="object-fit:contain; padding:18px;">
                     </div>
-                    <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     <div class="px-card-info" style="padding:16px 18px; text-align:center;">
                         <span class="px-card-category" style="margin-bottom:0;">Railings</span>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     </div>
                 </div>
 
@@ -719,9 +741,9 @@
                     <div class="px-card-img" style="padding-top:100%;">
                         <img src="images/products/balusters/fluted-baluster.png" alt="Fluted Baluster" loading="lazy" style="object-fit:contain; padding:18px;">
                     </div>
-                    <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     <div class="px-card-info" style="padding:16px 18px; text-align:center;">
                         <span class="px-card-category" style="margin-bottom:0;">Railings</span>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     </div>
                     </div>
 
@@ -735,9 +757,9 @@
                     <div class="px-card-img" style="padding-top:100%;">
                         <img src="images/products/partitions/Partitions-1.png" alt="Interlocking Geometric Partition Screen" loading="lazy" style="object-fit:contain; padding:18px;">
                     </div>
-                    <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     <div class="px-card-info" style="padding:16px 18px; text-align:center;">
                         <span class="px-card-category" style="margin-bottom:0;">Partitions</span>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     </div>
                     </div>
 
@@ -751,9 +773,9 @@
                     <div class="px-card-img" style="padding-top:100%;">
                         <img src="images/products/partitions/Partitions-2.png" alt="Sculptural Wave Ribbon Partition" loading="lazy" style="object-fit:contain; padding:18px;">
                     </div>
-                    <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     <div class="px-card-info" style="padding:16px 18px; text-align:center;">
                         <span class="px-card-category" style="margin-bottom:0;">Partitions</span>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     </div>
                 </div>
 
@@ -767,9 +789,9 @@
                     <div class="px-card-img" style="padding-top:100%;">
                         <img src="images/products/partitions/Partitions-4.png" alt="Organic Branch Sculptural Screen" loading="lazy" style="object-fit:contain; padding:18px;">
                     </div>
-                    <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     <div class="px-card-info" style="padding:16px 18px; text-align:center;">
                         <span class="px-card-category" style="margin-bottom:0;">Partitions</span>
+                        <div class="px-card-overlay"><span class="px-enquire">Enquire</span></div>
                     </div>
                 </div>
 
@@ -992,6 +1014,7 @@
             </div>
         </div>
     </section>
+
     <!-- PRODUCT MODAL -->
     <div class="pmodal-backdrop" id="pmodalBackdrop" role="dialog" aria-modal="true" aria-label="Product detail">
         <div class="pmodal" id="pmodal">
@@ -1310,6 +1333,37 @@
                         openModal(idx);
                     }
                 });
+
+                var cardThumbs = card.dataset.thumbs ? card.dataset.thumbs.split('|').filter(Boolean) : [];
+                var cardImg = card.querySelector('.px-card-img img');
+                var slideIdx = 0;
+                var slideTimer = null;
+                if (cardImg && cardThumbs.length > 1) {
+                    function startCardSlideshow() {
+                        clearInterval(slideTimer);
+                        slideTimer = setInterval(function () {
+                            slideIdx = (slideIdx + 1) % cardThumbs.length;
+                            cardImg.style.opacity = '0';
+                            setTimeout(function () {
+                                cardImg.src = cardThumbs[slideIdx];
+                                cardImg.style.opacity = '1';
+                            }, 380);
+                        }, 1600);
+                    }
+                    function stopCardSlideshow() {
+                        clearInterval(slideTimer);
+                        slideIdx = 0;
+                        cardImg.style.opacity = '0';
+                        setTimeout(function () {
+                            cardImg.src = cardThumbs[0];
+                            cardImg.style.opacity = '1';
+                        }, 220);
+                    }
+                    card.addEventListener('mouseenter', startCardSlideshow);
+                    card.addEventListener('pointerenter', startCardSlideshow);
+                    card.addEventListener('mouseleave', stopCardSlideshow);
+                    card.addEventListener('pointerleave', stopCardSlideshow);
+                }
             });
 
             pClose.addEventListener('click', closeModal);
@@ -1317,23 +1371,15 @@
                 if (e.target === backdrop) closeModal();
             });
             pPrev.addEventListener('click', function () {
-                if (currentThumbs.length > 1) {
-                    setModalImage(currentThumbIdx - 1);
-                } else {
                     modalIdx = (modalIdx - 1 + cards.length) % cards.length;
                     renderModal();
                     resetAI();
-                }
                 pmodal.scrollTop = 0;
             });
             pNext.addEventListener('click', function () {
-                if (currentThumbs.length > 1) {
-                    setModalImage(currentThumbIdx + 1);
-                } else {
                     modalIdx = (modalIdx + 1) % cards.length;
                     renderModal();
                     resetAI();
-                }
                 pmodal.scrollTop = 0;
             });
             document.addEventListener('keydown', function (e) {
