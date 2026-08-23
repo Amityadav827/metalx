@@ -1088,7 +1088,7 @@
                     </div>
                     <div class="px-card" data-cat="railings"
                         data-img="images/products/balusters/classic-pillar-baluster.png"
-                        data-thumbs="images/products/balusters/classic-pillar-baluster.png|images/products/white-bg-images/18.png|images/products/balusters/classic-pillar-baluster.png"
+                        data-thumbs="images/products/balusters/classic-pillar-baluster.png|images/products/white-bg-images/18.jpg|images/products/balusters/classic-pillar-baluster.png"
                         style="display:none" data-name="Classic Pillar Baluster" data-cat-label="Railings">
                         <div class="px-card-img">
                             <img src="images/products/balusters/classic-pillar-baluster.png"
@@ -1336,7 +1336,7 @@
                         </div>
                     </div>
                     <div class="px-card" data-cat="railings" data-img="images/products/balusters/Balusters-03.jpeg"
-                        data-thumbs="images/products/balusters/Balusters-03.jpeg|images/products/white-bg-images/18.png"
+                        data-thumbs="images/products/balusters/Balusters-03.jpeg|images/products/white-bg-images/18.jpg"
                         data-name="Curved Loop Frame Baluster" data-cat-label="Railings"
                         data-desc="Premium architectural baluster profile for custom railing and staircase applications."
                         data-specs="<tr><td>Material</td><td>Any metal</td></tr><tr><td>Profile</td><td>Customisable as per requirement</td></tr><tr><td>Size</td><td>Customisable as per requirement</td></tr><tr><td>Height</td><td>Customisable as per requirement</td></tr><tr><td>Finish</td><td>Customisable as per requirement</td></tr><tr><td>Application</td><td>Staircases, balconies, railings</td></tr>">
@@ -2221,22 +2221,14 @@
                 var timer = null;
                 var dots = dotsWrap.querySelectorAll('.card-slide-dot');
                 var slideRequest = 0;
-                var fadeLayer = null;
-                var SLIDE_INTERVAL = 1900;
-                var CROSSFADE_MS = 500;
+                var SLIDE_INTERVAL = 1600;
+                var FADE_MS = 380;
 
                 function preloadCardImage(src, done) {
                     var preloaded = new Image();
                     preloaded.onload = done;
                     preloaded.onerror = done;
                     preloaded.src = src;
-                }
-
-                function removeFadeLayer() {
-                    if (fadeLayer && fadeLayer.parentNode) {
-                        fadeLayer.parentNode.removeChild(fadeLayer);
-                    }
-                    fadeLayer = null;
                 }
 
                 function fadeToSlide(idx) {
@@ -2247,34 +2239,25 @@
                         dots.forEach(function (d, i) {
                             d.classList.toggle('active', i === nextIdx);
                         });
+                        img.style.opacity = '1';
                         return;
                     }
                     var requestId = ++slideRequest;
                     preloadCardImage(nextSrc, function () {
                         if (requestId !== slideRequest) return;
-                        removeFadeLayer();
-                        fadeLayer = document.createElement('img');
-                        fadeLayer.src = nextSrc;
-                        fadeLayer.alt = img.alt || '';
-                        fadeLayer.loading = 'eager';
-                        fadeLayer.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;padding:16px;display:block;opacity:0;transition:opacity ' + CROSSFADE_MS + 'ms ease-in-out;z-index:1;pointer-events:none;';
-                        imgWrap.appendChild(fadeLayer);
-                        img.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-in-out';
-                        setTimeout(function () {
-                            if (requestId !== slideRequest || !fadeLayer) return;
-                            img.style.opacity = '0';
-                            fadeLayer.style.opacity = '1';
-                        }, 20);
+                        img.style.transition = 'opacity ' + FADE_MS + 'ms ease';
+                        img.style.opacity = '0';
                         setTimeout(function () {
                             if (requestId !== slideRequest) return;
                             img.src = nextSrc;
                             slideIdx = nextIdx;
-                            img.style.opacity = '1';
-                            removeFadeLayer();
                             dots.forEach(function (d, i) {
                                 d.classList.toggle('active', i === nextIdx);
                             });
-                        }, CROSSFADE_MS + 30);
+                            requestAnimationFrame(function () {
+                                img.style.opacity = '1';
+                            });
+                        }, Math.round(FADE_MS / 2));
                     });
                 }
 

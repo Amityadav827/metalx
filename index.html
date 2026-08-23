@@ -560,7 +560,8 @@
                     <p class="hero-eyebrow">Facade Systems</p>
                     <h1>Precision in<br><em>Every Panel.</em></h1>
                     <p class="hero-sub">Engineered facade systems that define the skyline — from sleek modern cladding
-                        to heritage ornamental screens.</p>
+                        to heritage ornamental screens.</p>
+
 
                 </div>
             </div>
@@ -593,7 +594,8 @@
                     <p class="hero-eyebrow">Classical Collection</p>
                     <h1>Heritage<br><em>Reborn in Metal.</em></h1>
                     <p class="hero-sub">Centuries of architectural tradition reimagined — ornate cornices, wrought iron
-                        balustrades, and heritage gate panels.</p>
+                        balustrades, and heritage gate panels.</p>
+
 
                 </div>
             </div>
@@ -608,7 +610,8 @@
                     <p class="hero-eyebrow">Modern Collection</p>
                     <h1>Clean Lines.<br><em>Bold Statements.</em></h1>
                     <p class="hero-sub">Linear fins, perforated screens, and cassette cladding systems for architecture
-                        that speaks the language of now.</p>
+                        that speaks the language of now.</p>
+
 
                 </div>
             </div>
@@ -1336,28 +1339,20 @@
 
                 var cardThumbs = card.dataset.thumbs ? card.dataset.thumbs.split('|').filter(Boolean) : [];
                 var cardImg = card.querySelector('.px-card-img img');
-                var cardImgWrap = card.querySelector('.px-card-img');
                 var slideIdx = 0;
                 var slideTimer = null;
                 var slideRequest = 0;
-                var crossfadeLayer = null;
-                var SLIDE_INTERVAL = 1900;
-                var CROSSFADE_MS = 500;
+                var SLIDE_INTERVAL = 1600;
+                var FADE_MS = 380;
                 cardThumbs = cardThumbs.filter(function (src, i, arr) {
                     return arr.indexOf(src) === i;
                 });
-                if (cardImg && cardImgWrap && cardThumbs.length > 1) {
+                if (cardImg && cardThumbs.length > 1) {
                     function preloadCardImage(src, done) {
                         var preloaded = new Image();
                         preloaded.onload = done;
                         preloaded.onerror = done;
                         preloaded.src = src;
-                    }
-                    function removeCrossfadeLayer() {
-                        if (crossfadeLayer && crossfadeLayer.parentNode) {
-                            crossfadeLayer.parentNode.removeChild(crossfadeLayer);
-                        }
-                        crossfadeLayer = null;
                     }
                     function fadeToCardSlide(idx) {
                         var nextIdx = (idx + cardThumbs.length) % cardThumbs.length;
@@ -1370,35 +1365,16 @@
                         var requestId = ++slideRequest;
                         preloadCardImage(nextSrc, function () {
                             if (requestId !== slideRequest) return;
-                            removeCrossfadeLayer();
-                            crossfadeLayer = cardImg.cloneNode(false);
-                            crossfadeLayer.src = nextSrc;
-                            crossfadeLayer.alt = cardImg.alt || '';
-                            crossfadeLayer.loading = 'eager';
-                            crossfadeLayer.style.cssText = cardImg.getAttribute('style') || '';
-                            crossfadeLayer.style.position = 'absolute';
-                            crossfadeLayer.style.inset = '0';
-                            crossfadeLayer.style.width = '100%';
-                            crossfadeLayer.style.height = '100%';
-                            crossfadeLayer.style.display = 'block';
-                            crossfadeLayer.style.opacity = '0';
-                            crossfadeLayer.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-in-out';
-                            crossfadeLayer.style.pointerEvents = 'none';
-                            crossfadeLayer.style.zIndex = '1';
-                            cardImgWrap.appendChild(crossfadeLayer);
-                            cardImg.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-in-out';
-                            setTimeout(function () {
-                                if (requestId !== slideRequest || !crossfadeLayer) return;
-                                cardImg.style.opacity = '0';
-                                crossfadeLayer.style.opacity = '1';
-                            }, 20);
+                            cardImg.style.transition = 'opacity ' + FADE_MS + 'ms ease';
+                            cardImg.style.opacity = '0';
                             setTimeout(function () {
                                 if (requestId !== slideRequest) return;
                                 cardImg.src = nextSrc;
                                 slideIdx = nextIdx;
-                                cardImg.style.opacity = '1';
-                                removeCrossfadeLayer();
-                            }, CROSSFADE_MS + 40);
+                                requestAnimationFrame(function () {
+                                    cardImg.style.opacity = '1';
+                                });
+                            }, Math.round(FADE_MS / 2));
                         });
                     }
                     function startCardSlideshow() {
