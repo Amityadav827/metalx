@@ -2253,7 +2253,6 @@
                     preloadCardImage(nextSrc, function () {
                         if (requestId !== slideRequest) return;
                         removeFadeLayer();
-                        slideIdx = nextIdx;
                         fadeLayer = document.createElement('img');
                         fadeLayer.src = nextSrc;
                         fadeLayer.alt = img.alt || '';
@@ -2266,12 +2265,13 @@
                         setTimeout(function () {
                             if (requestId !== slideRequest) return;
                             img.src = nextSrc;
+                            slideIdx = nextIdx;
                             img.style.opacity = '1';
                             removeFadeLayer();
+                            dots.forEach(function (d, i) {
+                                d.classList.toggle('active', i === nextIdx);
+                            });
                         }, CROSSFADE_MS + 30);
-                    });
-                    dots.forEach(function (d, i) {
-                        d.classList.toggle('active', i === nextIdx);
                     });
                 }
 
@@ -2292,10 +2292,8 @@
                     }
                 }
 
-                c.addEventListener('mouseenter', startCardSlideshow);
-                c.addEventListener('pointerenter', startCardSlideshow);
-                c.addEventListener('mouseleave', stopCardSlideshow);
-                c.addEventListener('pointerleave', stopCardSlideshow);
+                c.addEventListener(window.PointerEvent ? 'pointerenter' : 'mouseenter', startCardSlideshow);
+                c.addEventListener(window.PointerEvent ? 'pointerleave' : 'mouseleave', stopCardSlideshow);
             });
 
             // Close
