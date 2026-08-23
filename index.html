@@ -1336,56 +1336,88 @@
 
                 var cardThumbs = card.dataset.thumbs ? card.dataset.thumbs.split('|').filter(Boolean) : [];
                 var cardImg = card.querySelector('.px-card-img img');
+                var cardImgWrap = card.querySelector('.px-card-img');
                 var slideIdx = 0;
                 var slideTimer = null;
                 var slideRequest = 0;
+                var crossfadeLayer = null;
+                var SLIDE_INTERVAL = 1900;
+                var CROSSFADE_MS = 500;
                 cardThumbs = cardThumbs.filter(function (src, i, arr) {
                     return arr.indexOf(src) === i;
                 });
-                if (cardImg && cardThumbs.length > 1) {
+                if (cardImg && cardImgWrap && cardThumbs.length > 1) {
                     function preloadCardImage(src, done) {
                         var preloaded = new Image();
                         preloaded.onload = done;
                         preloaded.onerror = done;
                         preloaded.src = src;
                     }
+                    function removeCrossfadeLayer() {
+                        if (crossfadeLayer && crossfadeLayer.parentNode) {
+                            crossfadeLayer.parentNode.removeChild(crossfadeLayer);
+                        }
+                        crossfadeLayer = null;
+                    }
                     function fadeToCardSlide(idx) {
                         var nextIdx = (idx + cardThumbs.length) % cardThumbs.length;
                         var nextSrc = cardThumbs[nextIdx];
+                        if (cardImg.getAttribute('src') === nextSrc) {
+                            slideIdx = nextIdx;
+                            cardImg.style.opacity = '1';
+                            return;
+                        }
                         var requestId = ++slideRequest;
                         preloadCardImage(nextSrc, function () {
                             if (requestId !== slideRequest) return;
-                            slideIdx = nextIdx;
-                            cardImg.style.transition = 'opacity 380ms ease';
-                            cardImg.style.opacity = '.68';
+                            removeCrossfadeLayer();
+                            crossfadeLayer = cardImg.cloneNode(false);
+                            crossfadeLayer.src = nextSrc;
+                            crossfadeLayer.alt = cardImg.alt || '';
+                            crossfadeLayer.loading = 'eager';
+                            crossfadeLayer.style.cssText = cardImg.getAttribute('style') || '';
+                            crossfadeLayer.style.position = 'absolute';
+                            crossfadeLayer.style.inset = '0';
+                            crossfadeLayer.style.width = '100%';
+                            crossfadeLayer.style.height = '100%';
+                            crossfadeLayer.style.display = 'block';
+                            crossfadeLayer.style.opacity = '0';
+                            crossfadeLayer.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-in-out';
+                            crossfadeLayer.style.pointerEvents = 'none';
+                            crossfadeLayer.style.zIndex = '1';
+                            cardImgWrap.appendChild(crossfadeLayer);
+                            cardImg.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-in-out';
+                            setTimeout(function () {
+                                if (requestId !== slideRequest || !crossfadeLayer) return;
+                                cardImg.style.opacity = '0';
+                                crossfadeLayer.style.opacity = '1';
+                            }, 20);
                             setTimeout(function () {
                                 if (requestId !== slideRequest) return;
                                 cardImg.src = nextSrc;
-                                requestAnimationFrame(function () {
-                                    cardImg.style.opacity = '1';
-                                });
-                            }, 190);
+                                slideIdx = nextIdx;
+                                cardImg.style.opacity = '1';
+                                removeCrossfadeLayer();
+                            }, CROSSFADE_MS + 40);
                         });
                     }
                     function startCardSlideshow() {
                         clearInterval(slideTimer);
                         slideTimer = setInterval(function () {
                             fadeToCardSlide(slideIdx + 1);
-                        }, 1600);
+                        }, SLIDE_INTERVAL);
                     }
                     function stopCardSlideshow() {
                         clearInterval(slideTimer);
-                        ++slideRequest;
+                        slideTimer = null;
                         if (slideIdx !== 0 || cardImg.getAttribute('src') !== cardThumbs[0]) {
                             fadeToCardSlide(0);
                         } else {
                             cardImg.style.opacity = '1';
                         }
                     }
-                    card.addEventListener('mouseenter', startCardSlideshow);
-                    card.addEventListener('pointerenter', startCardSlideshow);
-                    card.addEventListener('mouseleave', stopCardSlideshow);
-                    card.addEventListener('pointerleave', stopCardSlideshow);
+                    card.addEventListener(window.PointerEvent ? 'pointerenter' : 'mouseenter', startCardSlideshow);
+                    card.addEventListener(window.PointerEvent ? 'pointerleave' : 'mouseleave', stopCardSlideshow);
                 }
             });
 
