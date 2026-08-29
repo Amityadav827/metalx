@@ -1171,6 +1171,67 @@
             var currentThumbs = [];
             var zoomBox = null;
             var ZOOM = 3.5;
+            var railingsHeroProducts = [
+                {
+                    cat: 'railings',
+                    img: 'images/products/balusters/knuckle-baluster.png',
+                    thumbs: 'images/products/balusters/knuckle-baluster.png|images/products/application-products/4-copy.png|images/products/white-bg-images/4.png',
+                    name: 'Knuckle Baluster',
+                    catLabel: 'Railings',
+                    desc: 'Decorative knuckle joint midpoint adds structural character. Popular for traditional and transitional interiors.',
+                    specs: '<tr><td>Material</td><td>Iron</td></tr><tr><td>Profile</td><td>Customisable as per requirement</td></tr><tr><td>Size</td><td>Customisable as per requirement</td></tr><tr><td>Height</td><td>Customisable as per requirement</td></tr><tr><td>Finish</td><td>Customisable as per requirement</td></tr><tr><td>Application</td><td>Balconies, staircases, gates</td></tr>'
+                },
+                {
+                    cat: 'railings',
+                    img: 'images/products/balusters/basket-baluster.png',
+                    thumbs: 'images/products/balusters/basket-baluster.png|images/products/application-products/6-copy.png|images/products/white-bg-images/6.png',
+                    name: 'Basket Baluster',
+                    catLabel: 'Railings',
+                    desc: 'Intricate basket-weave centre — a hallmark of Victorian ironwork. Crafted individually for heritage projects.',
+                    specs: '<tr><td>Material</td><td>Brass</td></tr><tr><td>Profile</td><td>Customisable as per requirement</td></tr><tr><td>Size</td><td>Customisable as per requirement</td></tr><tr><td>Height</td><td>Customisable as per requirement</td></tr><tr><td>Finish</td><td>Customisable as per requirement</td></tr><tr><td>Application</td><td>Heritage, conservation, Victorian</td></tr>'
+                },
+                {
+                    cat: 'railings',
+                    img: 'images/products/balusters/spear-tip-baluster.png',
+                    thumbs: 'images/products/balusters/spear-tip-baluster.png|images/products/application-products/application-7.png|images/products/white-bg-images/7.png',
+                    name: 'Spear-tip Baluster',
+                    catLabel: 'Railings',
+                    desc: 'Classic spear top with clean shaft. Used extensively in boundary fencing, garden railings, and perimeter gates.',
+                    specs: '<tr><td>Material</td><td>Stainless Steel</td></tr><tr><td>Profile</td><td>Customisable as per requirement</td></tr><tr><td>Size</td><td>Customisable as per requirement</td></tr><tr><td>Height</td><td>Customisable as per requirement</td></tr><tr><td>Finish</td><td>Customisable as per requirement</td></tr><tr><td>Application</td><td>Gates, fencing, boundary walls</td></tr>'
+                }
+            ];
+
+            function applyHomeCardProduct(card, product) {
+                if (!card || !product) return;
+                card.dataset.cat = product.cat;
+                card.dataset.img = product.img;
+                card.dataset.thumbs = product.thumbs;
+                card.dataset.name = product.name;
+                card.dataset.catLabel = product.catLabel;
+                card.dataset.desc = product.desc;
+                card.dataset.specs = product.specs;
+
+                var img = card.querySelector('.px-card-img img');
+                if (img) {
+                    img.src = product.img;
+                    img.alt = product.name;
+                    img.style.opacity = '1';
+                }
+
+                var label = card.querySelector('.px-card-category');
+                if (label) label.textContent = product.catLabel;
+            }
+
+            function showRailingsHomeProducts() {
+                railingsHeroProducts.forEach(function (product, i) {
+                    applyHomeCardProduct(cards[i + 3], product);
+                });
+            }
+
+            document.addEventListener('mxChoice', function (e) {
+                var detail = e.detail || {};
+                if (detail.category === 'railings') showRailingsHomeProducts();
+            });
 
             function ensureZoomBox() {
                 if (zoomBox) return zoomBox;
@@ -1337,17 +1398,20 @@
                     }
                 });
 
-                var cardThumbs = card.dataset.thumbs ? card.dataset.thumbs.split('|').filter(Boolean) : [];
                 var cardImg = card.querySelector('.px-card-img img');
                 var slideIdx = 0;
                 var slideTimer = null;
                 var slideRequest = 0;
                 var SLIDE_INTERVAL = 1600;
                 var FADE_MS = 380;
-                cardThumbs = cardThumbs.filter(function (src, i, arr) {
-                    return arr.indexOf(src) === i;
-                });
-                if (cardImg && cardThumbs.length > 1) {
+                function getCardThumbs() {
+                    var thumbs = card.dataset.thumbs ? card.dataset.thumbs.split('|').filter(Boolean) : [];
+                    if (!thumbs.length && card.dataset.img) thumbs = [card.dataset.img];
+                    return thumbs.filter(function (src, i, arr) {
+                        return arr.indexOf(src) === i;
+                    });
+                }
+                if (cardImg) {
                     function preloadCardImage(src, done) {
                         var preloaded = new Image();
                         preloaded.onload = done;
@@ -1355,6 +1419,8 @@
                         preloaded.src = src;
                     }
                     function fadeToCardSlide(idx) {
+                        var cardThumbs = getCardThumbs();
+                        if (cardThumbs.length < 2) return;
                         var nextIdx = (idx + cardThumbs.length) % cardThumbs.length;
                         var nextSrc = cardThumbs[nextIdx];
                         if (cardImg.getAttribute('src') === nextSrc) {
@@ -1378,6 +1444,8 @@
                         });
                     }
                     function startCardSlideshow() {
+                        var cardThumbs = getCardThumbs();
+                        if (cardThumbs.length < 2) return;
                         clearInterval(slideTimer);
                         slideTimer = setInterval(function () {
                             fadeToCardSlide(slideIdx + 1);
@@ -1386,6 +1454,8 @@
                     function stopCardSlideshow() {
                         clearInterval(slideTimer);
                         slideTimer = null;
+                        var cardThumbs = getCardThumbs();
+                        if (cardThumbs.length < 2) return;
                         if (slideIdx !== 0 || cardImg.getAttribute('src') !== cardThumbs[0]) {
                             fadeToCardSlide(0);
                         } else {
