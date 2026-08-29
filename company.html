@@ -11,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=workshop-slider">
 </head>
 
 <body class="page-company">
@@ -146,8 +146,40 @@
                         maintain absolute control over quality at every step.</p>
                 </div>
                 <div class="split-image">
-                    <img src="images/banner/Workshop.jpg"
-                        alt="Metal fabrication innovation">
+                    <div class="workshop-slider" id="workshopSlider" aria-label="MetalX workshop image slider">
+                        <div class="workshop-slide active">
+                            <img src="images/products/Workshop/Workshop-1.png" alt="MetalX workshop facility 1">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-2.png" alt="MetalX workshop facility 2" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-3.png" alt="MetalX workshop facility 3" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-4.png" alt="MetalX workshop facility 4" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-5.png" alt="MetalX workshop facility 5" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-6.png" alt="MetalX workshop facility 6" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-7.png" alt="MetalX workshop facility 7" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-8.png" alt="MetalX workshop facility 8" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-9.png" alt="MetalX workshop facility 9" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/Workshop/Workshop-10.png" alt="MetalX workshop facility 10" loading="lazy">
+                        </div>
+                        <button class="workshop-slider-btn workshop-slider-prev" type="button" aria-label="Previous workshop image">&#8592;</button>
+                        <button class="workshop-slider-btn workshop-slider-next" type="button" aria-label="Next workshop image">&#8594;</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -215,6 +247,53 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script>
+        (function () {
+            var slider = document.getElementById('workshopSlider');
+            if (!slider) return;
+
+            var slides = Array.from(slider.querySelectorAll('.workshop-slide'));
+            var prev = slider.querySelector('.workshop-slider-prev');
+            var next = slider.querySelector('.workshop-slider-next');
+            var current = 0;
+            var timer = null;
+            var INTERVAL = 4500;
+
+            function showSlide(index) {
+                if (!slides.length) return;
+                current = (index + slides.length) % slides.length;
+                slides.forEach(function (slide, i) {
+                    var isActive = i === current;
+                    slide.classList.toggle('active', isActive);
+                    slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                });
+            }
+
+            function startAutoplay() {
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    showSlide(current + 1);
+                }, INTERVAL);
+            }
+
+            function go(delta) {
+                showSlide(current + delta);
+                startAutoplay();
+            }
+
+            slides.forEach(function (slide, i) {
+                slide.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
+            });
+
+            if (prev) prev.addEventListener('click', function () { go(-1); });
+            if (next) next.addEventListener('click', function () { go(1); });
+            slider.addEventListener('mouseenter', function () { clearInterval(timer); });
+            slider.addEventListener('mouseleave', startAutoplay);
+
+            showSlide(0);
+            startAutoplay();
+        })();
+    </script>
 </body>
 
 </html>
