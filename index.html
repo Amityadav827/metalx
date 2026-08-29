@@ -1228,9 +1228,60 @@
                 });
             }
 
+            function showRailingsDesignStyles() {
+                var designSection = Array.from(document.querySelectorAll('section')).find(function (section) {
+                    return section.textContent.indexOf('Two Distinct Styles') !== -1;
+                });
+                if (!designSection) return;
+
+                var styleSections = designSection.querySelectorAll('.split-section');
+                var styleOne = styleSections[0];
+                var styleTwo = styleSections[1];
+
+                function updateStyle(section, data) {
+                    if (!section) return;
+                    var img = section.querySelector('.split-image img');
+                    var title = section.querySelector('.split-content h2');
+                    var desc = section.querySelector('.split-content p');
+                    var btn = section.querySelector('.split-content .btn');
+
+                    if (img) {
+                        img.src = data.img;
+                        img.alt = data.alt;
+                    }
+                    if (title) title.textContent = data.title;
+                    if (desc) desc.textContent = data.desc;
+                    if (btn) {
+                        btn.textContent = data.button;
+                        btn.href = data.href;
+                    }
+                }
+
+                updateStyle(styleOne, {
+                    img: 'images/products/application-products/application-10.png',
+                    alt: 'Classic ornamental railing installation — MetalX',
+                    title: 'Classic Railings',
+                    desc: 'Timeless railing systems shaped by traditional detailing, balanced proportions, and crafted metalwork. Designed for staircases, balconies, and interiors that call for a more decorative and enduring architectural character.',
+                    button: 'Railings',
+                    href: 'products.html?cat=railings'
+                });
+
+                updateStyle(styleTwo, {
+                    img: 'images/products/application-products/application-7.png',
+                    alt: 'Modern railing installation — MetalX',
+                    title: 'Modern Railings',
+                    desc: 'Contemporary railing systems defined by clean lines, refined profiles, and precise architectural detailing. Designed for modern staircases, balconies, and interiors where simplicity, proportion, and material finish take priority.',
+                    button: 'Railings',
+                    href: 'products.html?cat=railings'
+                });
+            }
+
             document.addEventListener('mxChoice', function (e) {
                 var detail = e.detail || {};
-                if (detail.category === 'railings') showRailingsHomeProducts();
+                if (detail.category === 'railings') {
+                    showRailingsHomeProducts();
+                    showRailingsDesignStyles();
+                }
             });
 
             function ensureZoomBox() {
