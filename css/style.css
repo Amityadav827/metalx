@@ -1110,7 +1110,8 @@ h6+.divider {
     transform: translateY(0);
 }
 
-.slide-content h1 {
+.slide-content h1,
+.slide-content h2 {
     font-family: var(--font-display);
     font-size: clamp(3rem, 6.5vw, 6rem);
     font-weight: 300;
@@ -1124,7 +1125,8 @@ h6+.divider {
     transition: opacity .8s ease .5s, transform .8s ease .5s;
 }
 
-.carousel-slide.active h1 {
+.carousel-slide.active h1,
+.carousel-slide.active h2 {
     opacity: 1;
     transform: translateY(0);
 }
@@ -2759,7 +2761,8 @@ h6+.divider {
         padding-bottom: 80px;
     }
 
-    .slide-content h1 {
+    .slide-content h1,
+    .slide-content h2 {
         font-size: clamp(2.2rem, 8vw, 3.2rem);
         max-width: 100%;
     }
@@ -2936,7 +2939,8 @@ h6+.divider {
         --container-pad: 18px;
     }
 
-    .slide-content h1 {
+    .slide-content h1,
+    .slide-content h2 {
         font-size: 2rem;
     }
 
@@ -3057,7 +3061,8 @@ h6+.divider {
    27. RESPONSIVE — VERY SMALL 380px
 ───────────────────────────────────────── */
 @media (max-width: 380px) {
-    .slide-content h1 {
+    .slide-content h1,
+    .slide-content h2 {
         font-size: 1.8rem;
     }
 
