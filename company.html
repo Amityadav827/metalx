@@ -185,6 +185,45 @@
         </div>
     </section>
 
+    <!-- SHOWROOM -->
+    <section class="section">
+        <div class="container">
+            <div class="split-section fade-up">
+                <div class="split-image">
+                    <div class="workshop-slider" id="showroomSlider" aria-label="MetalX showroom image slider">
+                        <div class="workshop-slide active">
+                            <img src="images/products/showroom/showroom-1.webp" alt="MetalX showroom 1">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/showroom/showroom-2.webp" alt="MetalX showroom 2" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/showroom/showroom-3.webp" alt="MetalX showroom 3" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/showroom/showroom-4.webp" alt="MetalX showroom 4" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/showroom/showroom-5.webp" alt="MetalX showroom 5" loading="lazy">
+                        </div>
+                        <div class="workshop-slide">
+                            <img src="images/products/showroom/showroom-6.webp" alt="MetalX showroom 6" loading="lazy">
+                        </div>
+                        <button class="workshop-slider-btn workshop-slider-prev" type="button" aria-label="Previous showroom image">&#8592;</button>
+                        <button class="workshop-slider-btn workshop-slider-next" type="button" aria-label="Next showroom image">&#8594;</button>
+                    </div>
+                </div>
+                <div class="split-content pad-left bg-cream">
+                    <h6>Our Showroom</h6>
+                    <div class="divider left"></div>
+                    <h2>Experience MetalX Up Close</h2>
+                    <p>Step inside our showroom to explore a curated selection of railing systems, architectural metalwork, finishes, and custom design possibilities presented in real settings.</p>
+                    <p>From classic decorative craftsmanship to contemporary metal detailing, the showroom offers a closer look at the materials, proportions, finishes, and workmanship behind MetalX.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA -->
     <section class="section cta-section text-white">
         <div class="container">
@@ -245,49 +284,51 @@
     <script src="js/main.js"></script>
     <script>
         (function () {
-            var slider = document.getElementById('workshopSlider');
-            if (!slider) return;
+            var sliders = Array.from(document.querySelectorAll('.workshop-slider'));
+            if (!sliders.length) return;
 
-            var slides = Array.from(slider.querySelectorAll('.workshop-slide'));
-            var prev = slider.querySelector('.workshop-slider-prev');
-            var next = slider.querySelector('.workshop-slider-next');
-            var current = 0;
-            var timer = null;
-            var INTERVAL = 4500;
+            sliders.forEach(function (slider) {
+                var slides = Array.from(slider.querySelectorAll('.workshop-slide'));
+                var prev = slider.querySelector('.workshop-slider-prev');
+                var next = slider.querySelector('.workshop-slider-next');
+                var current = 0;
+                var timer = null;
+                var INTERVAL = 4500;
 
-            function showSlide(index) {
-                if (!slides.length) return;
-                current = (index + slides.length) % slides.length;
+                function showSlide(index) {
+                    if (!slides.length) return;
+                    current = (index + slides.length) % slides.length;
+                    slides.forEach(function (slide, i) {
+                        var isActive = i === current;
+                        slide.classList.toggle('active', isActive);
+                        slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                    });
+                }
+
+                function startAutoplay() {
+                    clearInterval(timer);
+                    timer = setInterval(function () {
+                        showSlide(current + 1);
+                    }, INTERVAL);
+                }
+
+                function go(delta) {
+                    showSlide(current + delta);
+                    startAutoplay();
+                }
+
                 slides.forEach(function (slide, i) {
-                    var isActive = i === current;
-                    slide.classList.toggle('active', isActive);
-                    slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                    slide.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
                 });
-            }
 
-            function startAutoplay() {
-                clearInterval(timer);
-                timer = setInterval(function () {
-                    showSlide(current + 1);
-                }, INTERVAL);
-            }
+                if (prev) prev.addEventListener('click', function () { go(-1); });
+                if (next) next.addEventListener('click', function () { go(1); });
+                slider.addEventListener('mouseenter', function () { clearInterval(timer); });
+                slider.addEventListener('mouseleave', startAutoplay);
 
-            function go(delta) {
-                showSlide(current + delta);
+                showSlide(0);
                 startAutoplay();
-            }
-
-            slides.forEach(function (slide, i) {
-                slide.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
             });
-
-            if (prev) prev.addEventListener('click', function () { go(-1); });
-            if (next) next.addEventListener('click', function () { go(1); });
-            slider.addEventListener('mouseenter', function () { clearInterval(timer); });
-            slider.addEventListener('mouseleave', startAutoplay);
-
-            showSlide(0);
-            startAutoplay();
         })();
     </script>
 </body>
