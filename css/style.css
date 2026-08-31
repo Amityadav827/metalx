@@ -2827,7 +2827,7 @@ h6+.divider {
 
     .split-image {
         min-height: unset;
-        aspect-ratio: 16/9;
+        aspect-ratio: 16 / 16;
         position: relative;
     }
 
