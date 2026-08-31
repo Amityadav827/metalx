@@ -1,0 +1,26 @@
+Options -MultiViews
+DirectoryIndex index.html
+
+RewriteEngine On
+
+# Redirect direct .html page requests to clean URLs while preserving query strings.
+RewriteCond %{THE_REQUEST} \s/+index\.html[?\s] [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+about-us\.html[?\s] [NC]
+RewriteRule ^about-us\.html$ /about-us [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+company\.html[?\s] [NC]
+RewriteRule ^company\.html$ /company [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+products\.html[?\s] [NC]
+RewriteRule ^products\.html$ /products [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+contact-us\.html[?\s] [NC]
+RewriteRule ^contact-us\.html$ /contact-us [R=301,L]
+
+# Resolve clean page URLs to the existing static HTML files.
+RewriteRule ^about-us/?$ about-us.html [L]
+RewriteRule ^company/?$ company.html [L]
+RewriteRule ^products/?$ products.html [L]
+RewriteRule ^contact-us/?$ contact-us.html [L]
