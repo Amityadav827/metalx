@@ -1636,6 +1636,10 @@ h6+.divider {
     background: var(--beige-pale);
 }
 
+.split-content.pad-left.bg-cream {
+    padding: 0 60px;
+}
+
 /* ─────────────────────────────────────────
    14. STATS ROW
 ───────────────────────────────────────── */
