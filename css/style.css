@@ -3128,4 +3128,8 @@ h6+.divider {
         margin-left: auto;
         margin-right: auto;
     }
+
+    .home-product-card .px-enquire {
+        font-size: 6px !important;
+    }
 }
