@@ -3120,4 +3120,12 @@ h6+.divider {
     section.section.bg-beige .split-content.pad-right.bg-cream {
         padding: 0 20px !important;
     }
+
+    #homeProductsGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px !important;
+        width: calc(100% - 16px);
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
