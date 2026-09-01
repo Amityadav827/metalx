@@ -3099,3 +3099,25 @@ h6+.divider {
         color: black;
     }
 }
+
+@media (max-width: 768px) {
+    .split-section.fade-up.visible .split-content.pad-left.bg-cream {
+        padding: 20px 0;
+    }
+
+    .split-section.fade-up.visible .split-content.pad-right.bg-cream {
+        padding: 20px 0;
+    }
+
+    .split-section.fade-up.visible .split-content.pad-left.bg-cream {
+        padding: 20px 0 !important;
+    }
+
+    section.section.bg-beige .split-content.pad-left.bg-cream {
+        padding: 0 20px !important;
+    }
+
+    section.section.bg-beige .split-content.pad-right.bg-cream {
+        padding: 0 20px !important;
+    }
+}
