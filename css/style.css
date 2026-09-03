@@ -3106,7 +3106,7 @@ h6+.divider {
     }
 
     .split-section.fade-up.visible .split-content.pad-left.bg-cream {
-        padding: 20px 20px !important;
+        padding: 20px 0 !important;
     }
 
     section.section.bg-beige .split-content.pad-left.bg-cream {
