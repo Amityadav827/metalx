@@ -3101,10 +3101,6 @@ h6+.divider {
 }
 
 @media (max-width: 768px) {
-    .split-section.fade-up.visible .split-content.pad-left.bg-cream {
-        padding: 20px 0;
-    }
-
     .split-section.fade-up.visible .split-content.pad-right.bg-cream {
         padding: 20px 0;
     }
