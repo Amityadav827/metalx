@@ -1143,6 +1143,10 @@ h6+.divider {
     transition: opacity .8s ease .65s, transform .8s ease .65s;
 }
 
+.hero-sub-soft {
+    color: #cccccb;
+}
+
 .carousel-slide.active .hero-sub {
     opacity: 1;
     transform: translateY(0);
