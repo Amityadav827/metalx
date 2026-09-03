@@ -3113,6 +3113,10 @@ h6+.divider {
         padding: 0 20px !important;
     }
 
+    section.section.bg-beige .split-section .split-content.pad-left.bg-cream {
+        padding: 0 20px !important;
+    }
+
     section.section.bg-beige .split-content.pad-right.bg-cream {
         padding: 0 20px !important;
     }
