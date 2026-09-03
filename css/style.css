@@ -836,8 +836,8 @@ h6+.divider {
 
 .mx-entrance-overlay {
     background:
-        linear-gradient(90deg, rgba(20, 16, 12, .80) 0%, rgba(20, 16, 12, .58) 42%, rgba(20, 16, 12, .34) 100%),
-        linear-gradient(to top, rgba(20, 16, 12, .62) 0%, rgba(20, 16, 12, .08) 54%, rgba(20, 16, 12, .36) 100%);
+        linear-gradient(90deg, rgba(20, 16, 12, .5) 0%, rgba(20, 16, 12, .2) 42%, rgba(20, 16, 12, .34) 100%),
+        linear-gradient(to top, rgba(20, 16, 12, .2) 0%, rgba(20, 16, 12, .08) 54%, rgba(20, 16, 12, .36) 100%);
 }
 
 .mx-entrance-inner {
