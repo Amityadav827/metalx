@@ -90,6 +90,21 @@
             border-bottom-color: var(--gold-mid);
         }
 
+        .railings-moq {
+            display: none;
+            margin-top: 18px;
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .16em;
+            color: var(--gold-deep);
+            text-align: center;
+        }
+
+        .railings-moq.visible {
+            display: block;
+        }
+
         .has-dropdown.dropdown-open .nav-dropdown {
             opacity: 1;
             visibility: visible;
@@ -847,6 +862,7 @@
                     <button class="filter-tab active" data-filter="railings">Railings</button>
                     <button class="filter-tab" data-filter="partitions">Partitions</button>
                 </div>
+                <div class="railings-moq" id="railingsMoq">MOQ IS 100</div>
             </div>
         </div>
 
@@ -2055,6 +2071,7 @@
 
             const tabs = document.querySelectorAll('.filter-tab');
             const cards = Array.from(document.querySelectorAll('.px-card'));
+            const railingsMoq = document.getElementById('railingsMoq');
             const loadBtn = document.getElementById('loadMoreBtn');
             const loadWrap = document.getElementById('loadMoreWrap');
             const PER_PAGE = 18;
@@ -2072,6 +2089,7 @@
                     t.classList.toggle('active', s);
                     t.setAttribute('aria-selected', s);
                 });
+                railingsMoq.classList.toggle('visible', cat === 'railings');
                 renderCards();
             }
 
