@@ -1628,48 +1628,6 @@ h6+.divider {
     right: 18px;
 }
 
-/* Become a Partner */
-.partner-hero {
-    padding: 152px 0 92px;
-    background: var(--beige-bg);
-    border-bottom: 1px solid var(--beige-mid);
-}
-
-.partner-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
-    gap: 72px;
-    align-items: center;
-}
-
-.partner-hero-copy h1 {
-    margin: 22px 0 20px;
-}
-
-.partner-hero-copy p {
-    max-width: 520px;
-    font-size: 16px;
-    margin-bottom: 34px;
-}
-
-.partner-hero-visual {
-    min-height: 520px;
-    border: 1px solid var(--beige-mid);
-    overflow: hidden;
-    background: var(--beige-pale);
-}
-
-.partner-hero-visual img {
-    width: 100%;
-    height: 100%;
-    min-height: 520px;
-    object-fit: cover;
-}
-
-.partner-application-anchor {
-    height: 1px;
-}
-
 .partner-benefits {
     background: var(--beige-pale);
     border-bottom: 1px solid var(--beige-mid);
@@ -1703,11 +1661,11 @@ h6+.divider {
 }
 
 .partner-benefit-item:nth-child(4) {
-    grid-column: 2 / span 2;
+    grid-column: span 2;
 }
 
 .partner-benefit-item:nth-child(5) {
-    grid-column: 4 / span 2;
+    grid-column: span 2;
 }
 
 .partner-benefit-item:hover {
@@ -1772,21 +1730,122 @@ h6+.divider {
     scroll-margin-top: 96px;
 }
 
-.partner-application-panel {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 56px;
+.partner-application-split {
+    display: grid;
+    grid-template-columns: minmax(0, .49fr) minmax(0, .51fr);
+    align-items: stretch;
     background: var(--beige-bg);
     border: 1px solid var(--beige-mid);
 }
 
-.partner-application-panel .partner-section-heading p {
+.partner-application-image {
+    position: relative;
+    min-height: 760px;
+    overflow: hidden;
+    background: var(--ink);
+}
+
+.partner-application-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 760px;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+.partner-application-overlay {
+    position: absolute;
+    left: 32px;
+    bottom: 32px;
+    max-width: 360px;
+    padding: 28px 30px;
+    background: rgba(28, 24, 20, .74);
+    border: 1px solid rgba(232, 213, 163, .24);
+}
+
+.partner-application-overlay span,
+.partner-application-overlay small {
+    display: block;
+    color: var(--gold-light);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+}
+
+.partner-application-overlay strong {
+    display: block;
+    margin: 10px 0 18px;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    line-height: 1.05;
+}
+
+.partner-application-overlay small {
+    color: rgba(255, 255, 255, .78);
+    font-size: 10px;
+}
+
+.partner-application-panel {
+    max-width: none;
+    margin: 0;
+    padding: 56px;
+    background: var(--beige-bg);
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.partner-application-heading {
+    margin-bottom: 38px;
+}
+
+.partner-application-heading h2 {
+    margin: 18px 0 18px;
+}
+
+.partner-application-heading p {
     max-width: 640px;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .partner-application-form {
-    margin-top: 44px;
+    margin-top: 0;
+}
+
+.partner-application-form .form-grid {
+    gap: 0 22px;
+}
+
+.partner-application-form .form-row {
+    margin-bottom: 20px;
+}
+
+.partner-application-form .form-row input,
+.partner-application-form .form-row textarea {
+    min-height: 48px;
+    padding: 13px 14px;
+    background: var(--beige-pale);
+    border: 1px solid var(--beige-mid);
+}
+
+.partner-application-form .form-row textarea {
+    min-height: 126px;
+}
+
+.partner-application-form .form-row input:focus,
+.partner-application-form .form-row textarea:focus {
+    border-color: var(--gold);
+}
+
+.partner-form-submit .btn {
+    width: 100%;
+    justify-content: center;
 }
 
 @media (max-width: 1024px) {
@@ -1815,6 +1874,15 @@ h6+.divider {
 
     .partner-application-panel {
         padding: 44px;
+    }
+
+    .partner-application-split {
+        grid-template-columns: 1fr;
+    }
+
+    .partner-application-image,
+    .partner-application-image img {
+        min-height: 420px;
     }
 }
 
@@ -3248,20 +3316,6 @@ h6+.divider {
         min-height: 200px;
     }
 
-    .partner-hero {
-        padding: 112px 0 64px;
-    }
-
-    .partner-hero-grid {
-        grid-template-columns: 1fr;
-        gap: 36px;
-    }
-
-    .partner-hero-visual,
-    .partner-hero-visual img {
-        min-height: 340px;
-    }
-
     .partner-section-heading {
         margin-bottom: 36px;
     }
@@ -3296,8 +3350,30 @@ h6+.divider {
         padding: 30px 24px;
     }
 
-    .partner-application-form {
-        margin-top: 32px;
+    .partner-application-image,
+    .partner-application-image img {
+        min-height: 320px;
+    }
+
+    .partner-application-overlay {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        max-width: none;
+        padding: 22px;
+    }
+
+    .partner-application-overlay strong {
+        font-size: 1.9rem;
+    }
+
+    .partner-application-heading {
+        margin-bottom: 30px;
+    }
+
+    .partner-application-form .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
     }
 
     .btn {

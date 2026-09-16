@@ -73,22 +73,20 @@
     </div>
 
     <main>
-        <section class="partner-hero">
+        <section class="page-banner">
+            <div class="hero-bg">
+                <img src="images/banner/become a partner.jpg" alt="MetalX partner network">
+            </div>
+            <div class="hero-overlay"></div>
             <div class="container">
-                <div class="partner-hero-grid">
-                    <div class="partner-hero-copy fade-up">
-                        <nav class="breadcrumb">
-                            <a href="/">Home</a><span>&rsaquo;</span>
-                            <span>Become a Partner</span>
-                        </nav>
-                        <h1>Become a Metal X Partner</h1>
-                        <p>Join the Metal X Partner Network and get exclusive benefits for your business.</p>
-                        <a href="#partner-application" class="btn btn-gold btn-arrow">Become a Partner</a>
-                    </div>
-                    <div class="partner-hero-visual fade-up">
-                        <img src="images/products/application-products/home-page-railing-01.png"
-                            alt="MetalX architectural railing detail">
-                    </div>
+                <div class="hero-content">
+                    <nav class="breadcrumb" aria-label="Breadcrumb">
+                        <a href="/">Home</a>
+                        <span>›</span>
+                        <span style="color:rgba(255,255,255,0.9)">Become a Partner</span>
+                    </nav>
+                    <h1>Become a Metal X Partner</h1>
+                    <p class="hero-sub hero-sub-soft" style="margin-bottom:0;">Join the Metal X Partner Network and get exclusive benefits for your business.</p>
                 </div>
             </div>
         </section>
@@ -146,56 +144,66 @@
         </section>
         <section class="partner-application-section section" id="partner-application">
             <div class="container">
-                <div class="partner-application-panel fade-up">
-                    <div class="partner-section-heading">
-                        <h6>PARTNER APPLICATION</h6>
-                        <div class="divider"></div>
-                        <h2>Start Your Partnership</h2>
-                        <p>Fill in your details below and our team will get in touch with you regarding the Metal X Partner Network.</p>
+                <div class="partner-application-split fade-up">
+                    <div class="partner-application-image">
+                        <img src="images/products/application-products/application-37-1.jpg" alt="MetalX railing partner network">
+                        <div class="partner-application-overlay">
+                            <span>Building</span>
+                            <strong>Beautiful Spaces<br>Together</strong>
+                            <small>METAL X PARTNER NETWORK</small>
+                        </div>
                     </div>
-                    <form action="#" method="post" class="partner-application-form">
-                        <div class="form-grid">
-                            <div class="form-row">
-                                <label for="partner-name">Name *</label>
-                                <input type="text" id="partner-name" name="name" required autocomplete="name">
+                    <div class="partner-application-panel">
+                        <div class="partner-application-heading">
+                            <h6>PARTNER APPLICATION</h6>
+                            <div class="divider left"></div>
+                            <h2>Start Your Partnership</h2>
+                            <p>Fill in your details below and our team will get in touch with you regarding the Metal X Partner Network.</p>
+                        </div>
+                        <form action="#" method="post" class="partner-application-form">
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="partner-name">Name *</label>
+                                    <input type="text" id="partner-name" name="name" required autocomplete="name">
+                                </div>
+                                <div class="form-row">
+                                    <label for="partner-company">Company Name *</label>
+                                    <input type="text" id="partner-company" name="company_name" required autocomplete="organization">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="partner-city">City *</label>
+                                    <input type="text" id="partner-city" name="city" required autocomplete="address-level2">
+                                </div>
+                                <div class="form-row">
+                                    <label for="partner-address">Address *</label>
+                                    <input type="text" id="partner-address" name="address" required autocomplete="street-address">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="partner-phone">Phone *</label>
+                                    <input type="tel" id="partner-phone" name="phone" required autocomplete="tel">
+                                </div>
+                                <div class="form-row">
+                                    <label for="partner-email">Email *</label>
+                                    <input type="email" id="partner-email" name="email" required autocomplete="email">
+                                </div>
                             </div>
                             <div class="form-row">
-                                <label for="partner-company">Company Name *</label>
-                                <input type="text" id="partner-company" name="company_name" required autocomplete="organization">
-                            </div>
-                        </div>
-                        <div class="form-grid">
-                            <div class="form-row">
-                                <label for="partner-city">City *</label>
-                                <input type="text" id="partner-city" name="city" required autocomplete="address-level2">
+                                <label for="partner-business-type">Business Type *</label>
+                                <input type="text" id="partner-business-type" name="business_type" required>
                             </div>
                             <div class="form-row">
-                                <label for="partner-address">Address *</label>
-                                <input type="text" id="partner-address" name="address" required autocomplete="street-address">
+                                <label for="partner-message">Message *</label>
+                                <textarea id="partner-message" name="message" rows="5" required></textarea>
                             </div>
-                        </div>
-                        <div class="form-grid">
-                            <div class="form-row">
-                                <label for="partner-phone">Phone *</label>
-                                <input type="tel" id="partner-phone" name="phone" required autocomplete="tel">
+                            <div class="form-submit partner-form-submit">
+                                <button type="submit" class="btn btn-gold btn-arrow">Submit Application</button>
                             </div>
-                            <div class="form-row">
-                                <label for="partner-email">Email *</label>
-                                <input type="email" id="partner-email" name="email" required autocomplete="email">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <label for="partner-business-type">Business Type *</label>
-                            <input type="text" id="partner-business-type" name="business_type" required>
-                        </div>
-                        <div class="form-row">
-                            <label for="partner-message">Message *</label>
-                            <textarea id="partner-message" name="message" rows="5" required></textarea>
-                        </div>
-                        <div class="form-submit">
-                            <button type="submit" class="btn btn-gold btn-arrow">Submit Application</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
