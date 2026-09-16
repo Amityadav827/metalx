@@ -15,6 +15,10 @@
     {
       "source": "/contact-us",
       "destination": "/contact-us.html"
+    },
+    {
+      "source": "/become-a-partner",
+      "destination": "/become-a-partner.html"
     }
   ]
 }
