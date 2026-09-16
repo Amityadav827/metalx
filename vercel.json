@@ -1,16 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/become-a-partner",
-      "destination": "/distributor",
-      "permanent": true
-    },
-    {
-      "source": "/become-a-partner.html",
-      "destination": "/distributor",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     {
       "source": "/about-us",
@@ -29,8 +17,8 @@
       "destination": "/contact-us.html"
     },
     {
-      "source": "/distributor",
-      "destination": "/distributor.html"
+      "source": "/become-a-partner",
+      "destination": "/become-a-partner.html"
     }
   ]
 }

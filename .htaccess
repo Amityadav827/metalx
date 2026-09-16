@@ -21,16 +21,11 @@ RewriteCond %{THE_REQUEST} \s/+contact-us\.html[?\s] [NC]
 RewriteRule ^contact-us\.html$ /contact-us [R=301,L]
 
 RewriteCond %{THE_REQUEST} \s/+become-a-partner\.html[?\s] [NC]
-RewriteRule ^become-a-partner\.html$ /distributor [R=301,L]
-
-RewriteCond %{THE_REQUEST} \s/+distributor\.html[?\s] [NC]
-RewriteRule ^distributor\.html$ /distributor [R=301,L]
-
-RewriteRule ^become-a-partner/?$ /distributor [R=301,L]
+RewriteRule ^become-a-partner\.html$ /become-a-partner [R=301,L]
 
 # Resolve clean page URLs to the existing static HTML files.
 RewriteRule ^about-us/?$ about-us.html [L]
 RewriteRule ^company/?$ company.html [L]
 RewriteRule ^products/?$ products.html [L]
 RewriteRule ^contact-us/?$ contact-us.html [L]
-RewriteRule ^distributor/?$ distributor.html [L]
+RewriteRule ^become-a-partner/?$ become-a-partner.html [L]
